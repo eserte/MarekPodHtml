@@ -234,7 +234,7 @@ B<pod2html> converts Perl POD documentation to HTML.
 
 =head1 AUTHOR
 
-Marek Rouchal E<lt>marek@saftsack.fs.uni-bayreuth.deE<gt>
+Marek Rouchal E<lt>marekr@cpan.org<gt>
 
 =head1 SEE ALSO
 

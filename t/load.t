@@ -1,5 +1,5 @@
 # Testing of Pod::HTML
-# Author: Marek Rouchal <marek@saftsack.fs.uni-bayreuth.de>
+# Author: Marek Rouchal <marekr@cpan.org>
 
 $| = 1;
 

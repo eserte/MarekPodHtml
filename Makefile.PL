@@ -4,7 +4,7 @@ use 5.005;
 use ExtUtils::MakeMaker;
 
 # Package details
-$AUTHOR       = 'Marek Rouchal <Marek.Rouchal@gmx.net>';
+$AUTHOR       = 'Marek Rouchal <marekr@cpan.org>';
 $NAME         = 'Marek::Pod::HTML';
 $DISTNAME     = 'MarekPodHtml';
 $VERSION_FROM = 'lib/Marek/Pod/HTML.pm';
@@ -18,9 +18,10 @@ my %PREREQ_PM = (
     'Pod::Parser'       => 1.12,
     'Pod::Checker'      => 1.2,
     'Pod::Find'         => 0.21,
-    'HTML::Element'     => 1.56,
-    'HTML::Entities'    => 1.15,
-    'HTML::TreeBuilder' => 2.97,
+    'HTML::Element'     => 3.08,
+    'HTML::Entities'    => 1.18,
+    'HTML::Tagset'      => 3.03,
+    'HTML::TreeBuilder' => 3.08,
     'File::Spec'        => 0.8,
     'File::Path'        => 0,
     'File::Basename'    => 0

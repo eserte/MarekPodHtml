@@ -1,6 +1,11 @@
 TODO List for Pod::HTML
 =======================
 
+* include some comments in the HTML, e.g. where =for/=begin was used,
+  creation date.
+
+* Make !DOCTYPE a genuine HTML::Element
+
 * provide an option to split the Index into _, 0, a-z
   default name is podidx (master), split names are
   podidx_ (symbols), podidx0 (numbers) and podidx[a-z]
@@ -11,7 +16,7 @@ TODO List for Pod::HTML
 * smartindex: put those =items in index that are referenced somewhere
   with L<...>
 
-* Turn =over/=back without =item into <BLOCKQUOTE>
+* Turn =over/=back without =item into <BLOCKQUOTE> or <P> with indent.
 
 * the links to TOC on each page should point to the
   anchored item in the TOC list, so that one does not

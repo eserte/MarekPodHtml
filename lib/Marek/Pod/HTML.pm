@@ -21,7 +21,7 @@ Marek::Pod::HTML - convert Perl POD documents to HTML
 
 =head1 DESCRIPTION
 
-THIS IS PRELIMINARY SOFTWARE! The Marek:: namespace is strictly
+THIS IS PRELIMINARY SOFTWARE! The C<Marek::> namespace is strictly
 preliminary until a regular place in CPAN is found.
 
 B<Pod::HTML> converts one or more Pod documents into individual HTML
@@ -240,7 +240,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.41';
+$VERSION = '0.42';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
@@ -250,6 +250,9 @@ $VERSION = '0.41';
 
 # this is used everywhere
 my $NBSP = HTML::Entities::decode_entities('&nbsp;');
+
+# This makes HTML::Element print properly opened and closed <P> tags
+$HTML::Tagset::optionalEndTag{'p'} = 0;
 
 ##---------------------------------
 ## Function definitions begin here
@@ -868,6 +871,8 @@ sub begin_input {
 sub end_pod {
     my $self = shift;
     my $out_fh = $self->output_handle();
+    #delete $self->{_p_for_reuse};
+    delete $self->{_current};
 
     # close any lists left
     while(@{$self->{_list_stack}}) {
@@ -1058,7 +1063,9 @@ sub command {
         $self->{_current_anchor} = '';
         $paragraph =~ s/[\s\n]+$//s;
         if($paragraph =~ s/^[\s\n]*(\S+)[\s\n]*// && lc($1) eq 'html') {
-            $self->_push_raw_html($paragraph);
+            my $curr = $self->{_current};
+            my $p = _get_last_p_or_new($curr, 'POD_RAW');
+            $self->_push_raw_html($p,$paragraph);
         }
     }
 
@@ -1084,11 +1091,29 @@ sub command {
         $self->{_begin} = undef;
         # do I have html?
         if($self->{_raw_html}) {
-            $self->_push_raw_html($self->{_raw_html});
+            # try to find a preceding <P> tag
+            my $curr = $self->{_current};
+            my $p = _get_last_p_or_new($curr, 'POD_RAW');
+            $self->_push_raw_html($p,$self->{_raw_html});
             delete $self->{_raw_html};
         }
     }
     # ignore all the rest
+}
+
+sub _get_last_p_or_new
+{
+    my ($curr,$class) = @_;
+    my $p;
+    my $content = $curr->content();
+    if(defined $content && ref($content) && @$content &&
+      ref($content->[-2]) && $content->[-2]->tag() eq 'p') {
+        $p = $content->[-2];
+    } else { # need a new one
+        $p = HTML::Element->new('p', CLASS => $class);
+        $curr->push_content($p,"\n");
+    }
+    $p;
 }
 
 # process a verbatim paragraph
@@ -1136,7 +1161,7 @@ sub verbatim {
         }
         # this is special in perl.pod
         foreach(split(/\n/,$paragraph)) {
-            # _TODO_ expand tabs correctly?
+            # TODO expand tabs correctly?
             if(s/^(\s+)([\w:]+)(\t+)//) {
                 # this is for perl.pod - an implied list
                 my ($indent,$page,$postdent) = ($1,$2,$3);
@@ -1176,8 +1201,15 @@ sub textblock {
             # save the description for further use in TOC
             $self->description([ HTML::Element->clone_list(@text) ]);
         }
-        my $par = HTML::Element->new('p');
-        $self->{_current}->push_content(@text, "\n", $par, "\n");
+        my $par;
+        if($self->{_last_p_by} && $self->{_last_p_by} eq 'beginfor') {
+          $par = _get_last_p_or_new($self->{_current}, 'POD_TEXT');
+        } else {
+          $par = HTML::Element->new('p', CLASS => 'POD_TEXT');
+          $self->{_current}->push_content($par, "\n");
+        }
+        $par->push_content("\n",@text,"\n");
+        $self->{_last_p_by} = 'text';
     }
     # =begin html context
     elsif($self->{_begin} eq 'html') {
@@ -1369,7 +1401,7 @@ sub _expand_ptree {
 
         # italic text
         elsif($cmd eq 'I') {
-            # _TODO_ I<...I<...>...> should be expanded to
+            # TODO I<...I<...>...> should be expanded to
             # <I>...</I>...<I>...</I> - according to Achim Bohnet
             $self->_autolink_and_highlight(\@text, $contents, $line, 
               "$nestlist$cmd", 'i', 0);
@@ -1389,7 +1421,7 @@ sub _expand_ptree {
         }
 
         # custom index entries
-        # _TODO_ these should run also throgh Pod::Checker and result in
+        # TODO these should run also through Pod::Checker and result in
         # valid L<...> destinations
         elsif($cmd eq 'X') {
             # set up a fast lookup cache for node ids
@@ -1530,7 +1562,7 @@ sub _autolink_and_highlight
 
 # expand blanks and tabs to an appropriate amount of non-breaking space
 sub _expand_tab {
-    # _TODO_ more magic: indent by one blank less than in $str -
+    # TODO more magic: indent by one blank less than in $str -
     # this would allow for the missing E<br> syntax
     my ($str, $pos) = @_;
     my $new = '';
@@ -1584,22 +1616,50 @@ sub _local_toc {
 
 # push a raw HTML string on the current contents
 sub _push_raw_html {
-    my ($self,$str) = @_;
+    my ($self,$node,$str) = @_;
     my $tree = new HTML::TreeBuilder;
     $tree->warn(1);
     $tree->implicit_tags(1);
     $tree->ignore_unknown(1);
+    $tree->store_comments(1);
+    $tree->p_strict(1);
+    #$tree->implicit_body_p_tag(1);
     $tree->parse($str);
     $tree->eof;
     my $head = $tree->find_by_tag_name('head');
     $self->{_head}->push_content(@{$head->content()},"\n")
         if($head && $head->content());
     my $body = $tree->find_by_tag_name('body');
-    $self->{_current}->push_content(@{$body->content()},"\n")
+    $node->push_content(@{$body->content()})
         if($body && $body->content());
     # this will not delete the contents, they have been pushed
     # somewhere else
     $tree->delete();
+
+    # consolidate p tags, i.e. re-root them appropriately
+    my $lastp;
+    if($node->tag() eq 'p') {
+      my $root = $node->parent();
+      foreach($node->content_refs_list) {
+        if(ref $$_ && $$_->tag() eq 'p') {
+          my $parent = $$_->parent();
+          my $pindex = $$_->pindex();
+          my ($p,@rest) = $parent->splice_content($pindex);
+          if(@rest) {
+            my %attr = $node->all_attr();
+            my $newp = HTML::Element->new('p', $node->all_external_attr());
+            $newp->push_content(@rest);
+            $root->push_content($p,"\n",$newp,"\n");
+            $lastp = 'beginfor';
+          } else {
+            $root->push_content($p,"\n");
+            $lastp = 'raw';
+          }
+        }
+      }
+    }
+    $self->{_last_p_by} = $lastp || 'beginfor';
+    1;
 }
 
 # process a part of HTML::Element into plain text
@@ -1624,13 +1684,13 @@ sub DESTROY {
 
 =head1 SEE ALSO
 
-L<Pod::Checker>, L<Pod::Parser>, L<Pod::Find>,
-L<HTML::Element>, L<HTML::TreeBuilder>, L<HTML::Entities>,
-L<pod2man>, L<pod2text>, L<Pod::Man>
+L<Pod::Checker>, L<Pod::Parser>, L<Pod::Find>, L<HTML::Element>,
+L<HTML::TreeBuilder>, L<HTML::Entities>, L<HTML::FormatPS>,
+L<HTML::Tagset>, L<pod2man>, L<pod2text>, L<Pod::Man>
 
 =head1 AUTHOR
 
-Marek Rouchal E<lt>marek@saftsack.fs.uni-bayreuth.deE<gt>
+Marek Rouchal E<lt>marekr@cpan.org<gt>
 
 =head1 HISTORY
 
