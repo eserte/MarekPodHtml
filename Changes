@@ -1,5 +1,16 @@
 Revision history for Perl extension Marek::Pod::HTML.
 
+0.49 marek Thu Jan 16 21:49:21 CET 2003
+  - below reported by ADAMK:
+  - fixed: CPAN-RT#1905: Stylesheet link not currect HTML
+    (also reported by Mister Caveman mrcaveman101AThotmail.com)
+  - fixed: CPAN-RT#1906: Adding the generation time to the bottom of generated html
+  - fixed: CPAN-RT#1907: POD error in author section
+  - fixed: CPAN-RT#1908: "No POD in file" warning not suppressed by -warnings = 0
+  - fixed: CPAN-RT#1909: Files should be processed in alphabetical order
+  - fixed a few typos
+
+
 0.48 marek Thu Oct 31 11:45:38 MET 2002
   - fixed bug in call to _write_html
 
@@ -43,7 +54,7 @@ Revision history for Perl extension Marek::Pod::HTML.
     <P> with proper start/end tags (<P>...</P>)
   - =for/=begin do *not* introduce separate paragraphs in the output.
     Give your own <P>...</P> if you like separate paragraphs
-  - thanks to Raphael Manfredi <Raphael_Manfredi@pobox.com> for these
+  - thanks to Raphael Manfredi <Raphael_ManfrediATpobox.com> for these
     valuable suggestions
 
 0.41 marek Wed Jul 26 10:01:06 MET DST 2000

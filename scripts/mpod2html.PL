@@ -34,12 +34,13 @@ use Getopt::Long;
 
 use Pod::Find qw(pod_find simplify_name);
 
-my %opt;
+my %opt = ( banner => 1 );
 
 # compatibility hack for previous version(s) of pod2html
 my %oldopt;
 
 die unless(GetOptions(\%opt, qw(
+  banner!
   converter=s
   suffix=s
   filesuffix=s
@@ -175,6 +176,7 @@ else {
     warn "+++ Starting conversion\n" if($opt{verbose});
 
     pod2html( {
+        -banner => $opt{banner},
         -converter => $converter,
         -suffix => $opt{suffix},
         -filesuffix => $opt{filesuffix},
@@ -230,6 +232,7 @@ S<[ B<->(B<no>)B<inc> ]>
 S<[ B<->(B<no>)B<script> ]> 
 S<[ B<->(B<no>)B<warnings> ]> 
 S<[ B<->(B<no>)B<verbose> ]> 
+S<[ B<->(B<no>)B<banner> ]> 
 S<[ B<-stylesheet> I<link> ]>
 S<[ I<dir1> , I<dir2> , ... ]>
 S<[ I<pod1> , I<pod2> , ... ]>
@@ -380,19 +383,24 @@ converted. Using this, you will e.g. catch C<perldoc>.
 =item B<-warnings> | B<-nowarnings>
 
 When processing the first pass, print warnings. See L<Pod::Checker>
-for more information on warnings. Note: This can procude a lot of
+for more information on warnings. Note: This can produce a lot of
 output if the Pod source does not correspond to strict guidelines.
 
 =item B<-verbose> | B<-noverbose>
 
 Print more status information along the conversion process.
 
+=item B<-banner> | B<-nobanner>
+
+Generate a banner at the bottom of all converted files (or not).
+Default is true.
+
 =item B<-stylesheet> I<link>
 
 The (optional) link to a style sheet, which is included in the resulting HTML
 as
 
-  <LINK TYPE="text/css" HREF=$link>
+  <LINK TYPE="text/css" REL="stylesheet" HREF=$link>
 
 =back
 
@@ -409,8 +417,9 @@ STDIN and writing to STDOUT.
 =item I<dir1> , I<dir2> , ...
 
 Directories specified on the command line will be processed
-recursively. This means especially that e.g. F<Pod/Checker.pm>
-is recognized as C<Pod::Checker> (rather than C<Checker>).
+recursively. This means especially that if there is e.g. 
+F<Pod/Checker.pm> in the specified directory, it will be
+recognized as C<Pod::Checker> (rather than C<Checker>).
 
 =item I<pod1> , I<pod2> , ...
 
@@ -423,7 +432,7 @@ not be resolved.
 
 =head1 AUTHOR
 
-Marek Rouchal E<lt>marekr@cpan.org<gt>
+Marek Rouchal E<lt>marekr@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
