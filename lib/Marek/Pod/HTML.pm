@@ -253,7 +253,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.47';
+$VERSION = '0.48';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
@@ -514,7 +514,7 @@ sub pod2html {
 
         # write HTML file
         _write_html($tocobj->{_html},
-            "$opts{-dir}/$opts{-tocname}$opts{-filesuffix}",,$opts{-verbose});
+            "$opts{-dir}/$opts{-tocname}$opts{-filesuffix}",undef,$opts{-verbose});
 
         # dump postscript output
         if($opts{-ps}) {
@@ -582,7 +582,7 @@ sub pod2html {
         $idxobj->customize($opts{-idxtitle});
 
         _write_html($idxobj->{_html},
-            "$opts{-dir}/$opts{-idxname}$opts{-filesuffix}",,$opts{-verbose});
+            "$opts{-dir}/$opts{-idxname}$opts{-filesuffix}",undef,$opts{-verbose});
 
         # dump postscript if requested
         if($opts{-ps}) {

@@ -1,5 +1,8 @@
 Revision history for Perl extension Marek::Pod::HTML.
 
+0.48 marek Thu Oct 31 11:45:38 MET 2002
+  - fixed bug in call to _write_html
+
 0.47 marek Fri Oct 25 08:43:04 MEST 2002
   - next attempt to pacify CPANPLUS, only Makefile.PL modified
 
