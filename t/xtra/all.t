@@ -14,9 +14,15 @@ my $THISDIR = Cwd::cwd();
 
 my $htmldir = "$THISDIR/html";
 
-#@ARGV = ('-dir', $htmldir, qw(-inc -script -libpods perlfunc,perlvar,perlrun));
-@ARGV = ('-dir', $htmldir, qw(-script));
+#@ARGV = ('-dir', $htmldir, qw(-script));
+@ARGV = (
+  '-dir', $htmldir,
+  qw(-inc -script),
+  '-libpods', 'perlfunc,perlvar,perlrun'
+);
+
 $TEST_MODE = 1; # do not exit
+
 eval "require 'blib/script/mpod2html';";
 if($@) {
   ok(0);

@@ -240,7 +240,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.40';
+$VERSION = '0.41';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
@@ -456,16 +456,16 @@ sub pod2html {
             _basic_html();
         $tocobj->depth(0);
 
-        my $table = HTML::Element::V2->new('table');
+        my $table = HTML::Element->new('table');
         $tocobj->{_body}->push_content($table, "\n");
 
         foreach(sort { lc $a->page() cmp lc $b->page() } $cache->item()) {
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
                 href => $_->path());
             $anchor->push_content($_->page());
-            my $row = HTML::Element::V2->new('tr');
-            my $name = HTML::Element::V2->new('td', class => 'PODTOC_NAME');
-            my $text = HTML::Element::V2->new('td', class => 'PODTOC_DESC');
+            my $row = HTML::Element->new('tr');
+            my $name = HTML::Element->new('td', class => 'PODTOC_NAME');
+            my $text = HTML::Element->new('td', class => 'PODTOC_DESC');
             $row->push_content($name, $text);
             $table->push_content($row,"\n");
             $name->push_content($anchor);
@@ -541,18 +541,18 @@ sub pod2html {
         }
         foreach my $key (qw(Sym 0-9), sort keys %idx) {
             next unless(defined $idx{$key});
-            my $heading = HTML::Element::V2->new('h2', class => 'PODIDX');
+            my $heading = HTML::Element->new('h2', class => 'PODIDX');
             $heading->push_content($key);
             $idxobj->{_body}->push_content($heading, "\n");
             foreach my $text (sort {lc $a cmp lc $b} keys %{$idx{$key}}) {
                 $idxobj->{_body}->push_content($text);
                 foreach(@{$idx{$key}{$text}}) {
-                    my $anchor = HTML::Element::V2->new('a', href => $$_[0],
+                    my $anchor = HTML::Element->new('a', href => $$_[0],
                        class => 'POD_NAVLINK');
                     $anchor->push_content("[$$_[1]]");
                     $idxobj->{_body}->push_content($NBSP x 2, $anchor);
                 }
-                $idxobj->{_body}->push_content(HTML::Element::V2->new('br'),"\n");
+                $idxobj->{_body}->push_content(HTML::Element->new('br'),"\n");
             }
             delete $idx{$key};
         }
@@ -701,51 +701,51 @@ sub customize {
     #my $name = $self->name();
 
     # customize the title
-    my $title = HTML::Element::V2->new('title');
+    my $title = HTML::Element->new('title');
     $title->push_content($self->{-title} || $name || 'POD');
     $self->{_head}->push_content($title, "\n");
 
     # prepend big heading
     if($name) {
-        my $titleh = HTML::Element::V2->new('h1', 'CLASS' => 'POD_TITLE');
+        my $titleh = HTML::Element->new('h1', 'CLASS' => 'POD_TITLE');
         $titleh->push_content($name);
         $self->{_body}->unshift_content("\n",$titleh,"\n",
-            HTML::Element::V2->new('hr'));
+            HTML::Element->new('hr'));
     }
 
     if($self->{-navigation}) {
         # add navigation
-        my $table = HTML::Element::V2->new('table', width => '100%');
+        my $table = HTML::Element->new('table', width => '100%');
         $self->{_body}->unshift_content("\n",$table);
 
-        my $tr = HTML::Element::V2->new('tr');
+        my $tr = HTML::Element->new('tr');
         $table->push_content("\n",$tr,"\n");
 
         if($self->{'-next'}) {
-            my $td = HTML::Element::V2->new('td', align => 'left', width => '1%');
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+            my $td = HTML::Element->new('td', align => 'left', width => '1%');
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
              href => _construct_file_name($self->{'-next'}, $self->depth(), $self->{-suffix}));
-            $anchor->push_content('Next:', HTML::Element::V2->new('br'), $self->{'-next'});
+            $anchor->push_content('Next:', HTML::Element->new('br'), $self->{'-next'});
             $td->push_content($anchor);
             $tr->push_content($td);
         }
 
         if($self->{'-prev'}) {
-            my $td = HTML::Element::V2->new('td', align => 'left', width => '1%');
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+            my $td = HTML::Element->new('td', align => 'left', width => '1%');
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
               href => _construct_file_name($self->{'-prev'}, $self->depth(), $self->{-suffix}));
-            $anchor->push_content('Previous:', HTML::Element::V2->new('br'), $self->{'-prev'});
+            $anchor->push_content('Previous:', HTML::Element->new('br'), $self->{'-prev'});
             $td->push_content($anchor);
             $tr->push_content($td);
         }
 
-        my $filler = HTML::Element::V2->new('td', width => '90%');
+        my $filler = HTML::Element->new('td', width => '90%');
         $filler->push_content($NBSP);
         $tr->push_content($filler);
 
         if($self->{-toc}) {
-            my $td = HTML::Element::V2->new('td', align => 'right', width => '1%');
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLILNK',
+            my $td = HTML::Element->new('td', align => 'right', width => '1%');
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLILNK',
               href => _construct_file_name($self->{-tocname}, $self->depth(), $self->{-suffix}));
             my $text = '['.$self->{-toctitle}.']';
             $text =~ s/\s+/$NBSP/g;
@@ -755,8 +755,8 @@ sub customize {
         }
 
         if($self->{-idx}) {
-            my $td = HTML::Element::V2->new('td', align => 'right', width => '1%');
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+            my $td = HTML::Element->new('td', align => 'right', width => '1%');
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
               href => _construct_file_name($self->{-idxname}, $self->depth(), $self->{-suffix}));
             my $text = '['.$self->{-idxtitle}.']';
             $text =~ s/\s+/$NBSP/g;
@@ -767,15 +767,15 @@ sub customize {
     } # end navigation
 
     # for finding the way back to the top
-    my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+    my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
         name => 'Pod_TOP_OF_PAGE');
     $self->{_body}->unshift_content("\n",$anchor);
 
     # customize the footer
-    $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+    $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
         href => '#Pod_TOP_OF_PAGE');
     $anchor->push_content('[Top]');
-    $self->{_body}->push_content(HTML::Element::V2->new('hr'), "\n", $anchor,
+    $self->{_body}->push_content(HTML::Element->new('hr'), "\n", $anchor,
         " \nGenerated by Pod::HTML $VERSION on " . localtime() . "\n");
 }
 
@@ -936,8 +936,8 @@ sub command {
 
       # make <H2> and <H3>, but leave space for deeper
       # levels. By special request of Achim Bohnet ;-)
-      my $heading = HTML::Element::V2->new('h'.($n + 1), class => "POD_HEAD$n");
-      my $anchor = HTML::Element::V2->new('a', name => $id);
+      my $heading = HTML::Element->new('h'.($n + 1), class => "POD_HEAD$n");
+      my $anchor = HTML::Element->new('a', name => $id);
       $self->{_current_anchor} = $id;
       $anchor->push_content(@title);
       $heading->push_content($anchor);
@@ -949,7 +949,7 @@ sub command {
       }
       if($self->{-localtoc}) {
           push(@{$self->{_toc}}, [ $n, $id,
-          HTML::Element::V2->clone_list(@title) ]);
+          HTML::Element->clone_list(@title) ]);
       }
     }
     # Start of List
@@ -991,7 +991,7 @@ sub command {
               # a definition list
               $list->type('dl');
           }
-          $list->tag(HTML::Element::V2->new($list->type(), class => 'POD_LIST')
+          $list->tag(HTML::Element->new($list->type(), class => 'POD_LIST')
                     )->push_content("\n");
       $self->{_current}->push_content($list->tag(),"\n");
       } elsif(my $rx = $list->rx()) {
@@ -1007,7 +1007,7 @@ sub command {
       my @text = $self->interpolate($paragraph, $line_num);
 
       my $item;
-      my $anchor = HTML::Element::V2->new('a', name => $id);
+      my $anchor = HTML::Element->new('a', name => $id);
       if($list->type() eq 'dl') {
       my $dt;
           my $content = $list->tag()->content();
@@ -1018,18 +1018,18 @@ sub command {
                $dt->tag('dt');
           }
           else {
-          $dt = HTML::Element::V2->new('dt');
+          $dt = HTML::Element->new('dt');
               $list->tag()->push_content($dt);
           }
       $dt->push_content($anchor,"\n");
       $anchor->push_content(@text);
-      $item = HTML::Element::V2->new('dd');
+      $item = HTML::Element->new('dd');
       }
       else {
-      $item = HTML::Element::V2->new('li');
+      $item = HTML::Element->new('li');
       $anchor->push_content(@text);
       $item->push_content($anchor);
-      $item->push_content(HTML::Element::V2->new('br')) if(@text);
+      $item->push_content(HTML::Element->new('br')) if(@text);
       $item->push_content("\n");
       }
       $list->tag()->push_content($item);
@@ -1101,7 +1101,7 @@ sub verbatim {
 
     unless(length($paragraph)) {
         # just an empty line
-        $self->{_current}->push_content(HTML::Element::V2->new('p'), "\n");
+        $self->{_current}->push_content(HTML::Element->new('p'), "\n");
     }
     elsif(!$self->{_begin}) {
         # a regular paragraph
@@ -1123,7 +1123,7 @@ sub verbatim {
         }
         else {
           new_pre:
-            $pre = HTML::Element::V2->new('pre', 'POD_VERBATIM');
+            $pre = HTML::Element->new('pre', 'POD_VERBATIM');
             $self->{_current}->push_content($pre,"\n");
         }
         $pre->push_content("\n");
@@ -1144,7 +1144,7 @@ sub verbatim {
                 if($dest) {
                     my $destfile = _construct_file_name(
                         $dest->page(), $self->depth(), $self->{-suffix});
-                    my $link = HTML::Element::V2->new('a', href => $destfile,
+                    my $link = HTML::Element->new('a', href => $destfile,
                         class => 'POD_LINK');
                     $link->push_content($page);
                     $page = $link;
@@ -1174,9 +1174,9 @@ sub textblock {
         if($self->{_current_head1_title} eq 'NAME' && $paragraph &&
           !$self->description()) {
             # save the description for further use in TOC
-            $self->description([ HTML::Element::V2->clone_list(@text) ]);
+            $self->description([ HTML::Element->clone_list(@text) ]);
         }
-        my $par = HTML::Element::V2->new('p');
+        my $par = HTML::Element->new('p');
         $self->{_current}->push_content(@text, "\n", $par, "\n");
     }
     # =begin html context
@@ -1210,7 +1210,7 @@ sub _expand_ptree {
             while($chunk =~ s/^([^\n]*)\n([ \t]+)//) {
                 my ($line,$indent) = ($1,$2);
                 $line =~ s/\s/$NBSP/g if($nestlist =~ /S/);
-                push(@text, $line, HTML::Element::V2->new('br'),
+                push(@text, $line, HTML::Element->new('br'),
                     _expand_tab($indent) );
             }
             # escape whitespace if in S<>
@@ -1263,7 +1263,7 @@ sub _expand_ptree {
             my $link = Pod::Hyperlink->new($raw);
             unless(defined $link) {
                 # the link cannot be parsed
-                my $underline = HTML::Element::V2->new('u');
+                my $underline = HTML::Element->new('u');
                 $underline->push_content($raw);
                 push(@text,$underline);
                 next;
@@ -1307,7 +1307,7 @@ sub _expand_ptree {
                 # use Pod::Checker's expand procedure to get the link
                 # destination node
                 if($link->node()) {
-                    my $cruncher = Pod::Checker->new(-warnings => 0);
+                    my $cruncher = Pod::Checker->new(-quiet => 1);
                     $cruncher->errorsub(sub { 1; }); # suppress any errors
                     $node = $cruncher->interpolate_and_check($link->node(),
                         $line,$file);
@@ -1333,7 +1333,7 @@ sub _expand_ptree {
 
         # internal: hyperlink to page
         elsif($cmd eq 'P') {
-            my $tag = HTML::Element::V2->new($self->{_link_pagemark}, 
+            my $tag = HTML::Element->new($self->{_link_pagemark}, 
                 %{$self->{_link_pageopt}});
             push(@text,$tag);
             $tag->push_content($self->_expand_ptree($contents, $line,
@@ -1342,7 +1342,7 @@ sub _expand_ptree {
 
         # internal: hyperlink to section
         elsif($cmd eq 'Q') {
-            my $tag = HTML::Element::V2->new($self->{_link_sectionmark}, 
+            my $tag = HTML::Element->new($self->{_link_sectionmark}, 
                 %{$self->{_link_sectionopt}});
             push(@text,$tag);
             $tag->push_content($self->_expand_ptree($contents, $line,
@@ -1400,7 +1400,7 @@ sub _expand_ptree {
             # tag this with a unique identifier and add it to the index
             my $id = _idfy($contents->raw_text(), $self->{_ids});
             $self->{_ids}->{$id} = 1; # remember it
-            my $tag = HTML::Element::V2->new('a', name => $id);
+            my $tag = HTML::Element->new('a', name => $id);
             my @key = $self->_expand_ptree($contents, $line, "$nestlist$cmd");
             #$tag->push_content(@key);
             push(@text,$tag);
@@ -1422,17 +1422,17 @@ sub _default
 # setup the basic frame for a HTML tree
 sub _basic_html
 {
-    my $html = HTML::Element::V2->new('html');
-    my $head = HTML::Element::V2->new('head');
+    my $html = HTML::Element->new('html');
+    my $head = HTML::Element->new('head');
     $head->push_content("\n",
-      HTML::Element::V2->new('meta', 'http-equiv' => 'Content-Type',
+      HTML::Element->new('meta', 'http-equiv' => 'Content-Type',
         content => 'text/html; charset=ISO-8859-1'), "\n",
-      HTML::Element::V2->new('meta', 'http-equiv' => 'Content-Style-Type',
+      HTML::Element->new('meta', 'http-equiv' => 'Content-Style-Type',
         content => 'text/css'), "\n",
-      HTML::Element::V2->new('meta', 'name' => 'GENERATOR',
+      HTML::Element->new('meta', 'name' => 'GENERATOR',
         content => "Pod::HTML $VERSION"), "\n");
     $html->push_content("\n",$head,"\n");
-    my $body = HTML::Element::V2->new('body');
+    my $body = HTML::Element->new('body');
     $body->push_content("\n");
     $html->push_content($body,"\n");
     ($html,$head,$body);
@@ -1503,10 +1503,10 @@ sub _autolink_and_highlight
 {
     my ($self,$tref,$contents,$line,$nest,$type,$doit) = @_;
 
-    my $tag = HTML::Element::V2->new($type);
+    my $tag = HTML::Element->new($type);
     push(@$tref,$tag);
     # canonicalize raw_text before lookup
-    my $cruncher = Pod::Checker->new(-warnings => 0);
+    my $cruncher = Pod::Checker->new(-quiet => 1);
     $cruncher->errorsub(sub { 1; }); # suppress any errors
     my $text = $cruncher->interpolate_and_check($contents->raw_text(),
         $line,'');
@@ -1519,7 +1519,7 @@ sub _autolink_and_highlight
       ($node_ref = $self->{-lib}->{$text}) &&
       !($$node_ref[0] eq $self->{-name} &&
        $$node_ref[1] eq $self->{_current_anchor})) {
-        my $anchor = HTML::Element::V2->new('a', class => 'POD_LINK',
+        my $anchor = HTML::Element->new('a', class => 'POD_LINK',
           href => _construct_file_name($$node_ref[0], $self->depth(),
             $self->{-suffix} . '#' . $$node_ref[1]));
         $tag->push_content($anchor);
@@ -1555,15 +1555,15 @@ sub _local_toc {
     my $self = shift;
     if(defined $self->{_toc}) {
         my $level = 1;
-        my @hier = ( HTML::Element::V2->new('ul') );
+        my @hier = ( HTML::Element->new('ul') );
         $hier[0]->push_content("\n");
         $self->{_body}->unshift_content("\n", $hier[0], "\n",
-          HTML::Element::V2->new('hr'));
+          HTML::Element->new('hr'));
         foreach(@{$self->{_toc}}) {
             my ($l, $id, @line) = @$_;
             while($l > $level) {
                 # new sublevel
-                push(@hier, HTML::Element::V2->new('ul'));
+                push(@hier, HTML::Element->new('ul'));
                 $hier[-2]->push_content($hier[-1], "\n");
                 $level++;
                 $hier[-1]->push_content("\n");
@@ -1572,8 +1572,8 @@ sub _local_toc {
                 pop(@hier);
                 $level--;
             }
-            my $item = HTML::Element::V2->new('li');
-            my $anchor = HTML::Element::V2->new('a', class => 'POD_NAVLINK',
+            my $item = HTML::Element->new('li');
+            my $anchor = HTML::Element->new('a', class => 'POD_NAVLINK',
                 href => "#$id");
             $item->push_content($anchor);
             $anchor->push_content(@line);
@@ -1643,58 +1643,5 @@ B<HTML::Element> module by Gisle Aas this module would not exist.
 
 =cut
 
-package HTML::Element::V2;
-
-use strict;
-use Carp;
-
-@HTML::Element::V2::ISA = qw(HTML::Element);
-
-=item HTML::Element->clone_list(...nodes...)
-
-Returns a list consisting of a copy of each node given.
-Text segments are simply copied; elements are cloned by
-calling $it->clone on each of them.
-
-=cut
-
-sub clone_list {
-  my ($it, @list) = @_;
-  croak "I can be called only as a class method" if ref $it;
-  # all that does is get me here
-  return
-    map
-      {
-         ref($_)
-           ? $_->clone   # copy by method
-           : $_  # copy by evaluation
-      }
-    @list
-  ;
-}
-
-=item $h->clone()
-
-Returns a copy of the element (including all its descendants, if any).
-The returned element is parentless.  Any pos attributes present in the
-source element/tree will be absent in the copy.
-
-=cut
-
-sub clone {
-  my $it = shift;
-  croak "clone() can be called only as an object method" unless ref $it;
-  croak "clone() takes no arguments" if @_;
-
-  my $new = bless { %$it }, ref($it);
-  delete @$new{'_content', '_parent', '_pos'};
-  
-  # clone any contents
-  $new->push_content(
-    ref($it)->clone_list( @{$it->{'_content'}} )
-  ) if $it->{'_content'} and @{$it->{'_content'}};
-
-  return $new;
-}
-
 1;
+

@@ -25,9 +25,11 @@ Tom Christiansen's original pod2html
 Nick Ing-Simmons' PodToHtml (main source of inspiration for this design)
 
 Thanks for comments and contributions to
+
 Brad Appleton
 Wolfgang Laun
 Norbert Gruener
+Harald Joerg
 
 COPY/REUSE POLICY
 =================
@@ -77,18 +79,19 @@ distribution for more details.
 
 REQUIREMENTS
 
-* Perl version 5.005 or later
+* Perl version 5.005 or higher
 
-* File::Spec from CPAN (already bundled in Perl 5.005)
+* File::Spec (File-Spec-0.82 or higher)
+  (already bundled in Perl 5.6.0)
 
-* Pod::Parser (PodParser-1.13 or higher)
+* Pod::Parser (PodParser-1.17 or higher)
 
-* HTML::Element (HTML-Tree-0.66 or higher)
+* HTML::Element (HTML-Tree-0.68 or higher)
 
-* HTML::Entities (HTML-Parser-3.08 or higher)
+* HTML::Entities (HTML-Parser-3.10 or higher)
 
-* HTML::FormatPS (for Postscript output only)
-
+* HTML::FormatPS (HTML-Format-1.23 or higher)
+  (for Postscript output only)
 
 BUILDING & INSTALLING
 
@@ -98,6 +101,14 @@ Build this package using the standard mechanism:
       make
       make test
       make install
+
+For a full-featured test on all the locally installed Perl POD
+documentation say
+
+      make test_full
+
+and you will get a html subdirectory with a complete HTML conversion
+(hopefully ;-)
 
 BUGS
 
@@ -110,7 +121,7 @@ in the distribution.
 
 HISTORY
 
-Please see the file named "CHANGES" which should have been included
+Please see the file named "Changes" which should have been included
 in the distribution.
 
 MORE INFO

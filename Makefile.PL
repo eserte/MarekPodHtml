@@ -15,13 +15,13 @@ my %PL_FILES = map { ($a = $_) =~ s/\.PL// ? ($_,$a) : () } glob('scripts/*.PL')
 
 # prerequite modules
 my %PREREQ_PM = (
-    'Pod::Parser'       => 1.11,
-    'Pod::Checker'      => 1.098,
-    'Pod::Find'         => 0,
-    'HTML::Element'     => 1,
-    'HTML::Entities'    => 1,
-    'HTML::TreeBuilder' => 1,
-    'File::Spec'        => 0.7,
+    'Pod::Parser'       => 1.12,
+    'Pod::Checker'      => 1.2,
+    'Pod::Find'         => 0.21,
+    'HTML::Element'     => 1.56,
+    'HTML::Entities'    => 1.15,
+    'HTML::TreeBuilder' => 2.97,
+    'File::Spec'        => 0.8,
     'File::Path'        => 0,
     'File::Basename'    => 0
 );
@@ -32,31 +32,36 @@ $| = 1;
 
 sub check_module {
   my ($module,$version) = @_;
-  print substr("$module ............................",0,30);
-  my $ok = eval {
-    my $file = $module;
-    $file =~ s#::#/#g;
-    require $file . ".pm";
-    $module->VERSION($version) if defined $version;
-    1;
-  };
-  $missing++ unless $ok;
-  print $ok ? "found\n" : "** FAILED **\n$@\n";
-  $ok;
+  print substr("$module ............................",0,30)," ";
+  my $file = $module;
+  $file =~ s#::#/#g;
+  unless(require "$file.pm") {
+    print "** FAILED **\n";
+	return 0;
+  }
+  $ver = eval "\$${module}::VERSION";
+  #$module->VERSION($version) if defined $version;
+  #1;
+  unless($ver >= $version) {
+    print "** VERSION MISMATCH **\n";
+	print "  need at least version $version, have version $ver\n";
+	return 0;
+  }
+  print "ok\n";
+  1;
 }
 
 print "\nChecking for installed modules\n\n";
 
 for(keys %PREREQ_PM) {
-  check_module($_) or print <<"EDQ","\n";
-$_ is essential for Pod::HTML
-EDQ
+  check_module($_,$PREREQ_PM{$_}) or $missing++;
 }
 
 print "\n";
-print <<"EDQ" if $missing;
+die <<"EDQ" if $missing;
 ****************************************************************************
-You are missing some modules that are required for the modules in $NAME
+You are missing some modules (or particular versions) that are required
+for the modules in $NAME
 to work correctly. Read the above messages and download any required
 modules from http://www.perl.com/CPAN
 ****************************************************************************
@@ -78,3 +83,11 @@ WriteMakefile(
     'clean'        => {FILES => join(' ',values %PL_FILES, 'html') },
 );
 
+sub MY::postamble {
+<<"EDQ";
+
+test_full :
+	\$(MAKE) \$(TEST_TYPE) TEST_FILES=t/xtra/*.t
+
+EDQ
+}

@@ -1,5 +1,12 @@
 Revision history for Perl extension Pod::HTML.
 
+0.41 marek Wed Jul 26 10:01:06 MET DST 2000
+  - fixed bug that caused a crash in Pod::Checker
+  - made dependencies check more strict, i.e. the latest versions
+    of Pod::Checker, HTML::Element etc are required
+  - got rid of override package for HTML::Element
+  - updated TODO, README
+
 0.40 marek Sun Jun  4 19:57:55 MEST 2000
   - first candidate for CPAN
   - several cleanups

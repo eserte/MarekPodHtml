@@ -5,6 +5,9 @@ TODO List for Pod::HTML
   default name is podidx (master), split names are
   podidx_ (symbols), podidx0 (numbers) and podidx[a-z]
 
+* add toplevel index navigation (sym, num, a-z).
+  Fix parsing for Sym (some text still occurs in this section)
+
 * smartindex: put those =items in index that are referenced somewhere
   with L<...>
 
