@@ -8,5 +8,8 @@ t/load.t
 t/pod2html.t
 t/sample.pod
 t/sample.t
+t/xlink.t
+t/a.pod
+t/b.pod
 t/xtra/all.t
 TODO

@@ -15,7 +15,7 @@ Marek::Pod::HTML - convert Perl POD documents to HTML
 
 =head1 SYNOPSIS
 
-  use Pod::HTML;
+  use Marek::Pod::HTML;
   pod2html( { -dir => 'html' },
     { '/usr/lib/perl5/Pod/HTML.pm' => 'Pod::HTML' });
 
@@ -24,7 +24,7 @@ Marek::Pod::HTML - convert Perl POD documents to HTML
 THIS IS PRELIMINARY SOFTWARE! The C<Marek::> namespace is strictly
 preliminary until a regular place in CPAN is found.
 
-B<Pod::HTML> converts one or more Pod documents into individual HTML
+B<Marek::Pod::HTML> converts one or more Pod documents into individual HTML
 files. This is meant to be a successor of Tom Christiansen's original
 Pod::HTML. However it is not a plug-in replacement as there are
 significant differences.
@@ -34,7 +34,7 @@ When no document is specified, this script acts as a filter
 In any other case one or more corresponding F<.html> file(s) is/are
 created.
 
-Optionally B<Pod::HTML> can generate a table of contents and an index.
+Optionally B<Marek::Pod::HTML> can generate a table of contents and an index.
 As it makes use of the L<HTML::Element|HTML::Element> module, it can
 also generate Postscript output using L<HTML::FormatPS|HTML::FormatPS>.
 
@@ -118,14 +118,14 @@ C<LE<lt>http://www.perl.comE<gt>>.
 
 =head2 Options
 
-B<pod2html> recognizes the following options. Those passed to the
-B<Pod::HTML> class directly are marked with (*).
+B<mpod2html> recognizes the following options. Those passed to the
+B<Marek::Pod::HTML> class directly are marked with (*).
 
 =over 4
 
 =item B<-converter> I<module>
 
-The converter class to use, defaults to C<Pod::HTML>. This hook allows
+The converter class to use, defaults to C<Marek::Pod::HTML>. This hook allows
 for simple customization, see also L<"Customizing">.
 
 =item B<-suffix> I<string>
@@ -179,6 +179,12 @@ If true, a table of contents is built from the processed Pod documents.
 If true, an index is built from all C<=item>s of the processed Pod
 documents.
 
+=item B<-idxopt> I<options>
+
+Options for index building. Default is "item,x", which means that
+item strings as well as text marked up with C<XE<lt>...E<gt>> 
+generate entries in the index.
+
 =item B<-tocname> I<name>
 
 Use I<name> as the filename of the table of contents. Default is
@@ -225,6 +231,13 @@ When processing the first pass, print warnings. See L<Pod::Checker>
 for more information on warnings. Note: This can procude a lot of
 output if the Pod source does not correspond to strict guidelines.
 
+=item B<-stylesheet> I<link>
+
+The (optional) link to a style sheet, which is included in the resulting HTML
+as
+
+  <LINK TYPE="text/css" HREF=$link>
+
 =back
 
 =cut
@@ -240,7 +253,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.44';
+$VERSION = '0.45';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
@@ -278,7 +291,7 @@ sub pod2html {
             } } @_;
     }
     # set defaults
-    _default(\%opts, '-converter', 'Pod::HTML');
+    _default(\%opts, '-converter', 'Marek::Pod::HTML');
     _default(\%opts, '-filter', 0);
     _default(\%opts, '-suffix', '.html');
     _default(\%opts, '-filesuffix', $opts{-suffix});
@@ -297,6 +310,9 @@ sub pod2html {
     _default(\%opts, '-psfont', 'Helvetica');
     _default(\%opts, '-papersize', 'A4');
     _default(\%opts, '-warnings', 0);
+    _default(\%opts, '-verbose', 0);
+    _default(\%opts, '-stylesheet', '');
+    _default(\%opts, '-idxopt', 'item,x');
 
     # only a single file?
     if($opts{-filter}) {
@@ -312,7 +328,7 @@ sub pod2html {
 
     my $cache = Pod::Cache->new();
     foreach my $infile (keys %PODS) {
-        warn "\n+++ Scanning $infile\n";
+        warn "\n+++ Scanning $infile\n" if($opts{-verbose});
         ## Now create a pod scanner, based on Pod::Checker
         my $scanner = Pod::Checker->new(-warnings => $opts{'-warnings'},
                       -name => $PODS{$infile} || 'STDIN');
@@ -331,7 +347,8 @@ sub pod2html {
         }
 
         my $name = $scanner->name();
-        my @nodes = _unique_ids($scanner->node());
+        # also allow X<> entries as link destinations
+        my @nodes = _unique_ids($scanner->node()); #,$scanner->idx());
 
         # hack for perlrun - get the nodes for all switches
         if($name eq 'perlrun') {
@@ -344,12 +361,13 @@ sub pod2html {
             }
             push(@nodes,@addnodes);
         }
-
+        
         ## remember settings
         $cache->item(
             -file => $infile,
             -page => $name,
-            -nodes => [ @nodes ]);
+            -nodes => [ @nodes ],
+            -idx => [ _unique_ids($scanner->idx()) ]);
     } # end first pass
 
     # build lookup table for libpods
@@ -383,7 +401,7 @@ sub pod2html {
     # propagate some of the options
     my %conv_opts;
     for(qw(-suffix -navigation -localtoc -toc -tocname -toctitle -idx
-        -idxname -idxtitle)) {
+        -idxname -idxtitle -idxopt -stylesheet -verbose)) {
         $conv_opts{$_} = $opts{$_};
     }
     
@@ -397,15 +415,15 @@ sub pod2html {
         ## Now create a pod converter
         $_ = $cache[$i];
         my $infile = $_->file();
-        warn "\n+++ Converting $infile\n";
+        warn "\n+++ Converting $infile\n" if($opts{-verbose});
 
         my %current_opts = %conv_opts;
         $current_opts{-name} = $_->page();
         $current_opts{-mycache} = $_;
         $current_opts{'-next'} = ($i < $#cache) ? $cache[$i+1]->page() :
-            $current_opts{-idxname};
+            ($current_opts{-idx} ? $current_opts{-idxname} : '');
         $current_opts{-prev} = ($i > 0) ? $cache[$i-1]->page() :
-            $current_opts{-tocname};
+            ($current_opts{-toc} ? $current_opts{-tocname} : '');
 
         my $converter = $opts{-converter}->new(%current_opts);
 
@@ -449,9 +467,9 @@ sub pod2html {
         # H1 CLASS=PODTOC      : Table of contents heading
         # TD CLASS=PODTOC_NAME : POD name (appears as link)
         # TD CLASS=PODTOC_DESC : Description
-        warn "\n+++ Creating table of contents\n";
+        warn "\n+++ Creating table of contents\n" if($opts{-verbose});
 
-        # create a Pod::HTML object to gain access to the customize
+        # create a Marek::Pod::HTML object to gain access to the customize
         # method
         my $tocobj = bless { %conv_opts, '-next' => $cache[0]->page() },
             $opts{-converter};
@@ -496,7 +514,7 @@ sub pod2html {
 
         # write HTML file
         _write_html($tocobj->{_html},
-            "$opts{-dir}/$opts{-tocname}$opts{-filesuffix}");
+            "$opts{-dir}/$opts{-tocname}$opts{-filesuffix}",,$opts{-verbose});
 
         # dump postscript output
         if($opts{-ps}) {
@@ -516,7 +534,7 @@ sub pod2html {
         # Style classes in Index:
         # H1 CLASS=PODIDX     : Index heading
         # H2 CLASS=PODIDX     : Index section heading
-        warn "\n+++ Creating index\n";
+        warn "\n+++ Creating index\n" if($opts{-verbose});
 
         my $idxobj = bless { %conv_opts, '-prev' => $cache[-1]->page() },
             $opts{-converter};
@@ -564,7 +582,7 @@ sub pod2html {
         $idxobj->customize($opts{-idxtitle});
 
         _write_html($idxobj->{_html},
-            "$opts{-dir}/$opts{-idxname}$opts{-filesuffix}");
+            "$opts{-dir}/$opts{-idxname}$opts{-filesuffix}",,$opts{-verbose});
 
         # dump postscript if requested
         if($opts{-ps}) {
@@ -582,7 +600,7 @@ sub _write_ps
 {
     my ($file,$html,$opts) = @_;
 
-    warn "Writing PostScript $file\n";
+    warn "Writing PostScript $file\n" if($opts->{-verbose});
     unless(open(PS,">$file")) {
         warn "Error: Cannot write '$file': $!\n";
         return 0;
@@ -603,7 +621,7 @@ sub _write_ps
 
 =head2 OO Interface
 
-The B<Pod::HTML> module has an object oriented interface that allows
+The B<Marek::Pod::HTML> module has an object oriented interface that allows
 to customize the converter for special requirements or for
 proprietary conversion tools. This section describes the most important
 methods.
@@ -614,7 +632,7 @@ methods.
 
 Create a new converter object. Idiom:
 
-  my $converter = new Pod::HTML;
+  my $converter = new Marek::Pod::HTML;
 
 =cut
 
@@ -652,6 +670,7 @@ sub initialize {
     ## Internal
     # counter for headings and items
     $self->{_current_node} = 0;
+    $self->{_current_idx} = 0;
 
     # a stack for nested lists
     $self->{_list_stack} = [];
@@ -668,18 +687,18 @@ sub initialize {
 This method is called after the complete Pod source code has been
 converted, thus allowing for customizations like title, navigation
 and footer. I<$name> should contain the page title.
-This method also reads properties of the current Pod::HTML object
+This method also reads properties of the current Marek::Pod::HTML object
 to do the customizations. It is executed for each POD file processed and
 -- if enabled -- the index and the table of contents.
 
 X<Customizing>It is quite simple to build a proprietary
-customization by writing a new module that inherits from B<Pod::HTML>:
+customization by writing a new module that inherits from B<Marek::Pod::HTML>:
 
   package POD::HTML::mystyle;
-  use Pod::HTML qw(pod2html);
+  use Marek::Pod::HTML qw(pod2html);
   use vars qw(@ISA @EXPORT @EXPORT_OK);
   require Exporter;
-  @ISA = qw(Pod::HTML);
+  @ISA = qw(Marek::Pod::HTML);
   @EXPORT_OK = qw(&pod2html);
   sub customize {
     my ($self,$name) = @_;
@@ -690,7 +709,7 @@ customization by writing a new module that inherits from B<Pod::HTML>:
   }
 
 For complete customization, it is a  good starting point to copy the
-customize method from B<Pod::HTML>.
+customize method from B<Marek::Pod::HTML>.
 
 You can access all the converter's methods and properties through the
 C<$self->method()> and C<$self->{-property}> syntax, respectively.
@@ -706,6 +725,13 @@ sub customize {
       'DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"');
     $root->push_content("\n", $self->{_html});
     $self->{_html} = $root;
+
+    # include stylesheet
+    if($self->{-stylesheet}) {
+      my $css = HTML::Element->new('link', TYPE => "text/css", 
+        HREF => $self->{-stylesheet});
+      $self->{_head}->push_content($css, "\n");
+    }
 
     # customize the title
     my $title = HTML::Element->new('title');
@@ -783,7 +809,7 @@ sub customize {
         href => '#Pod_TOP_OF_PAGE');
     $anchor->push_content('[Top]');
     $self->{_body}->push_content(HTML::Element->new('hr'), "\n", $anchor,
-        " \nGenerated by Pod::HTML $VERSION on " . localtime() . "\n");
+        " \nGenerated by Marek::Pod::HTML $VERSION on " . localtime() . "\n");
 }
 
 =item depth()
@@ -844,7 +870,7 @@ sub indices {
 =item name()
 
 Set/retrieve the C<-name> property, i.e. the canonical Pod name
-(e.g. C<Pod::HTML>).
+(e.g. C<Marek::Pod::HTML>).
 
 =back
 
@@ -894,14 +920,14 @@ sub end_pod {
     $self->customize($self->name());
 
     # dump it
-    _write_html($self->{_html},$self->output_file(),$out_fh);
+    _write_html($self->{_html},$self->output_file(),$out_fh,$self->{-verbose});
     1;
 }
 
 sub _write_html
 {
-    my ($obj, $file, $handle) = @_;
-    warn "Writing HTML $file\n";
+    my ($obj, $file, $handle,$verbose) = @_;
+    warn "Writing HTML $file\n" if($verbose);
     my $html = $obj->as_HTML() . "\n";
     unless($handle) {
         unless(open(OUT, ">$file")) {
@@ -1046,9 +1072,11 @@ sub command {
       $list->tag()->push_content($item);
       $self->{_current} = $item;
 
-      # save item html text for later reference
-      $self->indices(_to_text(@text),$id)
+      if($self->{-idxopt} =~ /(^|,)item(,|$)/i) {
+        # save item html text for later reference
+        $self->indices(_to_text(@text),$id)
           if($paragraph =~ /^\s*(\w<\s*)*(\S*)/ && $2);
+      }
     }
 
     # End of a list
@@ -1140,22 +1168,11 @@ sub verbatim {
         my $content = $self->{_current}->content();
         # reuse last <pre> if immediate predecessor
         if(defined $content && ref($content) && @$content &&
-          ref($content->[-2])) {
-            if($content->[-2]->tag() eq 'pre') {
-                $pre = $content->[-2];
-            }
-            elsif($content->[-2]->tag() eq 'p') {
-                $pre = $content->[-2];
-                $pre->tag('pre')
-            }
-            else {
-                goto new_pre;
-            }
-        }
-        else {
-          new_pre:
-            $pre = HTML::Element->new('pre', CLASS => 'POD_VERBATIM');
-            $self->{_current}->push_content($pre,"\n");
+         ref($content->[-2]) && $content->[-2]->tag() eq 'pre') {
+          $pre = $content->[-2];
+        } else {
+          $pre = HTML::Element->new('pre', CLASS => 'POD_VERBATIM');
+          $self->{_current}->push_content($pre,"\n");
         }
         $pre->push_content("\n");
 
@@ -1362,7 +1379,7 @@ sub _expand_ptree {
                         $self->{_link_sectionopt} =
                             { CLASS => 'POD_LINK', HREF => "$destfile#$id" };
                     } else {
-                        my $inpage = $page ? " in page `$page'" : '';
+                        my $inpage = $page ? " in `$page'" : '';
                         warn "Cannot find node `$node'$inpage at L<> on line $line\n";
                     }
                 }
@@ -1436,18 +1453,13 @@ sub _expand_ptree {
         # valid L<...> destinations
         elsif($cmd eq 'X') {
             # set up a fast lookup cache for node ids
-            unless($self->{_ids}) {
-                %{$self->{_ids}} = map { $_->[1] => 1 }
-                    @{$self->{-mycache}->{-nodes}};
-            }
-            # tag this with a unique identifier and add it to the index
-            my $id = _idfy($contents->raw_text(), $self->{_ids});
-            $self->{_ids}->{$id} = 1; # remember it
+            my $count = ($self->{_current_idx})++;
+            my ($node,$id) = @{$self->{-mycache}->{-idx}->[$count]};
             my $tag = HTML::Element->new('a', name => $id);
-            my @key = $self->_expand_ptree($contents, $line, "$nestlist$cmd");
             #$tag->push_content(@key);
             push(@text,$tag);
-            $self->indices(_to_text(@key),$id);
+            $self->indices($node,$id) # $node was $txt
+              if($self->{-idxopt} =~ /(^|,)x(,|$)/i);
         }
         # ignore everything else
     }
@@ -1473,7 +1485,7 @@ sub _basic_html
       HTML::Element->new('meta', 'http-equiv' => 'Content-Style-Type',
         content => 'text/css'), "\n",
       HTML::Element->new('meta', 'name' => 'GENERATOR',
-        content => "Pod::HTML $VERSION"), "\n");
+        content => "Marek::Pod::HTML $VERSION"), "\n");
     $html->push_content("\n",$head,"\n");
     my $body = HTML::Element->new('body');
     $body->push_content("\n");

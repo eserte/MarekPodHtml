@@ -1,5 +1,19 @@
 Revision history for Perl extension Pod::HTML.
 
+0.45 marek Wed Oct 23 14:46:50 MEST 2002
+  - fixes/enhancements requested by Mark Overmeer <Mark  at  Overmeer.net>:
+  * option -stylesheet <link> to include a CSS
+  * fixed bug that turned a normal text paragraph into a verbatim one
+  * option -idxopt <options> to switch on/off index items
+  * Allow L<page/xxx> to X<xxx> in page.pod
+  - added some documentation and test
+  - fix spurious links to toc/idx if they are not generated
+  - -verbose switch now deserves its name (default is off)
+  - decent Pod documentation in mpod2html
+  - updated documentation wrt. the package name (Marek:: namespace)
+    as this probably will not make it into the core as the
+    replacement for Pod::HTML
+
 0.44 marek Fri Oct 12 12:30:35 MET DST 2001
   - added paragraph for
      =item * some text
