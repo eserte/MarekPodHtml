@@ -1,10 +1,11 @@
 TODO List for Pod::HTML
 =======================
 
+* Bulleted =item's with no text content (=item * / =item o) do not need
+  a <A NAME='...'>.
+
 * include some comments in the HTML, e.g. where =for/=begin was used,
   creation date.
-
-* Make !DOCTYPE a genuine HTML::Element
 
 * provide an option to split the Index into _, 0, a-z
   default name is podidx (master), split names are

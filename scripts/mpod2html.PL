@@ -104,7 +104,6 @@ if(defined $oldopt{title}) {
   $addopts{-title} = $oldopt{title};
 }
 
-
 my $converter = $opt{converter} || 'Marek::Pod::HTML';
 eval "use $converter qw(pod2html);";
 die "Fatal: Cannot load convertor module '$converter':\n$@\n"
@@ -167,6 +166,7 @@ else {
         close(TEMP);
         $pods{$tmp} = 'stdin';
         $addopts{-filter} = 1;
+        $opt{navigation} = 0 unless defined $opt{navigation};
     }
 
     warn "+++ Starting conversion\n";
