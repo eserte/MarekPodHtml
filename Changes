@@ -1,5 +1,10 @@
 Revision history for Perl extension Pod::HTML.
 
+0.44 marek Fri Oct 12 12:30:35 MET DST 2001
+  - added paragraph for
+     =item * some text
+  - one more test added
+
 0.43 marek Thu Dec  7 17:50:11 MET 2000
   - removed spurious <br> after <li>something
   - fixed some HTML::Element->new()

@@ -240,7 +240,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.43';
+$VERSION = '0.44';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
@@ -1030,15 +1030,21 @@ sub command {
           $dt->push_content($anchor,"\n");
           $anchor->push_content(@text);
           $item = HTML::Element->new('dd');
+          $self->{_last_p_by} = 'dd';
       } else {
           $item = HTML::Element->new('li', CLASS => 'POD_ITEM');
-          $anchor->push_content(@text);
+	  if(length $paragraph) {
+            my $p = HTML::Element->new('p');
+            $p->push_content(@text);
+            $anchor->push_content($p);
+	  } else {
+            $anchor->push_content(@text);
+	  }
           $item->push_content($anchor);
           $item->push_content("\n");
       }
       $list->tag()->push_content($item);
       $self->{_current} = $item;
-      $self->{_last_p_by} = 'dd';
 
       # save item html text for later reference
       $self->indices(_to_text(@text),$id)

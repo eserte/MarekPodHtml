@@ -6,5 +6,7 @@ README
 scripts/mpod2html.PL
 t/load.t
 t/pod2html.t
+t/sample.pod
+t/sample.t
 t/xtra/all.t
 TODO
