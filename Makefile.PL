@@ -34,20 +34,17 @@ $| = 1;
 sub check_module {
   my ($module,$version) = @_;
   print substr("$module ............................",0,30)," ";
-  my $file = $module;
-  $file =~ s#::#/#g;
-  unless(require "$file.pm") {
-    print "** FAILED **\n";
-	return 0;
+  eval "use $module";
+  if($@) {
+    print "** FAILED **\n$@\n";
+    return 0;
   }
   $ver = eval "\$${module}::VERSION";
-  #$module->VERSION($version) if defined $version;
-  #1;
   unless(defined $ver && $ver >= $version) {
     $ver = '<none>' unless(defined $ver);
     print "** VERSION MISMATCH **\n";
-	print "  need at least version $version, have version $ver\n";
-	return 0;
+    print "  need at least version $version, have version $ver\n";
+    return 0;
   }
   print "ok\n";
   1;

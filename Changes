@@ -1,4 +1,7 @@
-Revision history for Perl extension Pod::HTML.
+Revision history for Perl extension Marek::Pod::HTML.
+
+0.47 marek Fri Oct 25 08:43:04 MEST 2002
+  - next attempt to pacify CPANPLUS, only Makefile.PL modified
 
 0.46 marek Thu Oct 24 08:44:57 MET DST 2002
   - changed Makefile.PL to enable automatic testing in CPAN
