@@ -1,0 +1,19 @@
+Revision history for Perl extension Pod::HTML.
+
+0.40 marek Sun Jun  4 19:57:55 MEST 2000
+  - first candidate for CPAN
+  - several cleanups
+  - command line should be compatible to old pod2html
+
+0.20 marek  Mon Mar 13 17:14:43 MET 2000
+  - included some changes from Perl Workshop
+  - changed namespace to avoid collisions with existing pod2html
+    (suggestion by Andreas Koenig)
+
+0.15 marek  Sun Dec 19 18:00:43 1999
+  - first working package with documentation, tests
+    and dependencies
+
+0.01 marek  Sun Dec 19 14:05:43 1999
+  - original version; created by h2xs 1.19
+
