@@ -1,5 +1,9 @@
 Revision history for Perl extension Pod::HTML.
 
+0.46 marek Thu Oct 24 08:44:57 MET DST 2002
+  - changed Makefile.PL to enable automatic testing in CPAN
+  - fixed Pod error in mpod2html.PL (thanks to Mark Overmeer)
+
 0.45 marek Wed Oct 23 14:46:50 MEST 2002
   - fixes/enhancements requested by Mark Overmeer <Mark  at  Overmeer.net>:
   * option -stylesheet <link> to include a CSS

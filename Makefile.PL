@@ -43,7 +43,8 @@ sub check_module {
   $ver = eval "\$${module}::VERSION";
   #$module->VERSION($version) if defined $version;
   #1;
-  unless($ver >= $version) {
+  unless(defined $ver && $ver >= $version) {
+    $ver = '<none>' unless(defined $ver);
     print "** VERSION MISMATCH **\n";
 	print "  need at least version $version, have version $ver\n";
 	return 0;
@@ -59,7 +60,7 @@ for(keys %PREREQ_PM) {
 }
 
 print "\n";
-die <<"EDQ" if $missing;
+warn <<"EDQ" if $missing;
 ****************************************************************************
 You are missing some modules (or particular versions) that are required
 for the modules in $NAME

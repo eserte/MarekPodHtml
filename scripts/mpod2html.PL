@@ -260,6 +260,8 @@ is rather cumbersome.
 
 =head1 OPTIONS
 
+=over 4
+
 =item B<-converter> I<module>
 
 The converter class to use, defaults to C<Marek::Pod::HTML>. This hook allows

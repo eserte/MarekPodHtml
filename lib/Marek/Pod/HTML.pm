@@ -253,7 +253,7 @@ use Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
-$VERSION = '0.45';
+$VERSION = '0.46';
 @ISA = qw(Exporter Pod::Parser);
 
 @EXPORT = qw();
