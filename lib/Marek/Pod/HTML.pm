@@ -150,7 +150,7 @@ path. The default is the current working directory.
 =item B<-libpods> I<name1,name2,...>
 
 This option activates a highly magical feature: The C<=item> nodes of
-the specified Pod documents (given by Pod name, e.g. C<Pod::Parser>)
+the specified Pod documents (given by Pod name, e.g. C<Marek::Pod::Parser>)
 serve as destinations for highlighted text in all converted Pod
 documents. Typical usage: When converting your Perl installation's
 documentation, you may want to say
@@ -227,7 +227,7 @@ Generate Postscript files using the paper size I<size>. Default is
 
 =item B<-warnings> I<bool>
 
-When processing the first pass, print warnings. See L<Pod::Checker>
+When processing the first pass, print warnings. See L<Marek::Pod::Checker>
 for more information on warnings. Note: This can procude a lot of
 output if the Pod source does not correspond to strict guidelines.
 
@@ -253,13 +253,13 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 require Exporter;
 use File::Basename;
 use File::Path;
-use Pod::Parser;
-use Pod::Checker;
+use Marek::Pod::Parser;
+use Marek::Pod::Checker;
 use HTML::Entities;
 use HTML::TreeBuilder;
 
 $VERSION = '0.49';
-@ISA = qw(Exporter Pod::Parser);
+@ISA = qw(Exporter Marek::Pod::Parser);
 
 @EXPORT = qw();
 @EXPORT_OK = qw(&pod2html &_construct_file_name);
@@ -327,15 +327,15 @@ sub pod2html {
     return 0 unless(keys %PODS);
 
     ###################################################
-    # first pass: run Pod::Checker on all the files
+    # first pass: run Marek::Pod::Checker on all the files
     # and extract hyperlink nodes
     ###################################################
 
-    my $cache = Pod::Cache->new();
+    my $cache = Marek::Pod::Cache->new();
     foreach my $infile (sort keys %PODS) {
         warn "\n+++ Scanning $infile\n" if($opts{-verbose});
-        ## Now create a pod scanner, based on Pod::Checker
-        my $scanner = Pod::Checker->new(-warnings => $opts{'-warnings'},
+        ## Now create a pod scanner, based on Marek::Pod::Checker
+        my $scanner = Marek::Pod::Checker->new(-warnings => $opts{'-warnings'},
                       -name => $PODS{$infile} || 'STDIN');
 
         ## Now check the pod document for errors
@@ -823,7 +823,7 @@ sub customize {
 
 Returns how "deep" this documents is buried in the directory
 hierarchy. This value is derived from the C<-name> property and is
-for instance 1 for B<Pod::Parser>.
+for instance 1 for B<Marek::Pod::Parser>.
 
 =cut
 
@@ -892,7 +892,7 @@ sub name {
     return (@_ > 1) ? ($_[0]->{-name} = $_[1]) : $_[0]->{-name};
 }
 
-## overrides for Pod::Parser
+## overrides for Marek::Pod::Parser
 
 # things to do at start of POD
 sub begin_input {
@@ -997,7 +997,7 @@ sub command {
         $self->{_current_anchor} = '';
         $paragraph =~ s/[\s\n]+$//;
         unshift(@{$self->{_list_stack}},
-            Pod::List->new(-indent => $paragraph,
+            Marek::Pod::List->new(-indent => $paragraph,
                 -parent => $self->{_current}));
     }
 
@@ -1006,7 +1006,7 @@ sub command {
       # Check for an open list
       unless(@{$self->{_list_stack}}) {
         unshift(@{$self->{_list_stack}},
-            Pod::List->new(-indent => 4, -parent => 
+            Marek::Pod::List->new(-indent => 4, -parent => 
                     $self->{_current}));
         warn "Warning: =item without =over, auto-opening `=over 4'"
            . " at line $line_num of file $file\n";
@@ -1327,7 +1327,7 @@ sub _expand_ptree {
         elsif($cmd eq 'L') {
             # try to parse the hyperlink
             my $raw = $contents->raw_text();
-            my $link = Pod::Hyperlink->new($raw);
+            my $link = Marek::Pod::Hyperlink->new($raw);
             unless(defined $link) {
                 # the link cannot be parsed
                 my $underline = HTML::Element->new('u');
@@ -1371,10 +1371,10 @@ sub _expand_ptree {
             } else {
                 # search for node in page
                 my $node = '';
-                # use Pod::Checker's expand procedure to get the link
+                # use Marek::Pod::Checker's expand procedure to get the link
                 # destination node
                 if($link->node()) {
-                    my $cruncher = Pod::Checker->new(-quiet => 1);
+                    my $cruncher = Marek::Pod::Checker->new(-quiet => 1);
                     $cruncher->errorsub(sub { 1; }); # suppress any errors
                     $node = $cruncher->interpolate_and_check($link->node(),
                         $line,$file);
@@ -1456,7 +1456,7 @@ sub _expand_ptree {
         }
 
         # custom index entries
-        # TODO these should run also through Pod::Checker and result in
+        # TODO these should run also through Marek::Pod::Checker and result in
         # valid L<...> destinations
         elsif($cmd eq 'X') {
             # set up a fast lookup cache for node ids
@@ -1568,7 +1568,7 @@ sub _autolink_and_highlight
     my $tag = HTML::Element->new($type);
     push(@$tref,$tag);
     # canonicalize raw_text before lookup
-    my $cruncher = Pod::Checker->new(-quiet => 1);
+    my $cruncher = Marek::Pod::Checker->new(-quiet => 1);
     $cruncher->errorsub(sub { 1; }); # suppress any errors
     my $text = $cruncher->interpolate_and_check($contents->raw_text(),
         $line,'');
@@ -1714,7 +1714,7 @@ sub DESTROY {
 
 =head1 SEE ALSO
 
-L<Pod::Checker>, L<Pod::Parser>, L<Pod::Find>, L<HTML::Element>,
+L<Marek::Pod::Checker>, L<Marek::Pod::Parser>, L<Marek::Pod::Find>, L<HTML::Element>,
 L<HTML::TreeBuilder>, L<HTML::Entities>, L<HTML::FormatPS>,
 L<HTML::Tagset>, L<pod2man>, L<pod2text>, L<Pod::Man>
 
@@ -1728,7 +1728,7 @@ A big deal of this code has been recycled from a variety of existing
 Pod converters, e.g. by Tom Christiansen and Russ Allbery. A lot of
 ideas came from Nick Ing-Simmons' B<PodToHtml>, e.g. the usage of the
 B<HTML::Element> module and the B<HTML::FormatPS> module.
-Without the B<Pod::Parser> module by Brad Appleton and the
+Without the B<Marek::Pod::Parser> module by Brad Appleton and the
 B<HTML::Element> module by Gisle Aas this module would not exist.
 
 =cut
