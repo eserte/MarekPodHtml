@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/ParseUtils.pm -- helpers for POD parsing and conversion
+# Marek/Pod/ParseUtils.pm -- helpers for POD parsing and conversion
 #
 # Copyright (C) 1999-2000 by Marek Rouchal. All rights reserved.
 # This file is part of "PodParser". PodParser is free software;
@@ -7,7 +7,7 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::ParseUtils;
+package Marek::Pod::ParseUtils;
 use strict;
 
 use vars qw($VERSION);
@@ -16,46 +16,46 @@ require  5.005;    ## requires this Perl version or later
 
 =head1 NAME
 
-Pod::ParseUtils - helpers for POD parsing and conversion
+Marek::Pod::ParseUtils - helpers for POD parsing and conversion
 
 =head1 SYNOPSIS
 
-  use Pod::ParseUtils;
+  use Marek::Pod::ParseUtils;
 
-  my $list = new Pod::List;
-  my $link = Pod::Hyperlink->new('Pod::Parser');
+  my $list = new Marek::Pod::List;
+  my $link = Marek::Pod::Hyperlink->new('Marek::Pod::Parser');
 
 =head1 DESCRIPTION
 
-B<Pod::ParseUtils> contains a few object-oriented helper packages for
+B<Marek::Pod::ParseUtils> contains a few object-oriented helper packages for
 POD parsing and processing (i.e. in POD formatters and translators).
 
 =cut
 
 #-----------------------------------------------------------------------------
-# Pod::List
+# Marek::Pod::List
 #
 # class to hold POD list info (=over, =item, =back)
 #-----------------------------------------------------------------------------
 
-package Pod::List;
+package Marek::Pod::List;
 
 use Carp;
 
-=head2 Pod::List
+=head2 Marek::Pod::List
 
-B<Pod::List> can be used to hold information about POD lists
+B<Marek::Pod::List> can be used to hold information about POD lists
 (written as =over ... =item ... =back) for further processing.
 The following methods are available:
 
 =over 4
 
-=item Pod::List-E<gt>new()
+=item Marek::Pod::List-E<gt>new()
 
 Create a new list object. Properties may be specified through a hash
 reference like this:
 
-  my $list = Pod::List->new({ -start => $., -indent => 4 });
+  my $list = Marek::Pod::List->new({ -start => $., -indent => 4 });
 
 See the individual methods/properties for details.
 
@@ -208,31 +208,31 @@ sub tag {
 }
 
 #-----------------------------------------------------------------------------
-# Pod::Hyperlink
+# Marek::Pod::Hyperlink
 #
 # class to manipulate POD hyperlinks (L<>)
 #-----------------------------------------------------------------------------
 
-package Pod::Hyperlink;
+package Marek::Pod::Hyperlink;
 
-=head2 Pod::Hyperlink
+=head2 Marek::Pod::Hyperlink
 
-B<Pod::Hyperlink> is a class for manipulation of POD hyperlinks. Usage:
+B<Marek::Pod::Hyperlink> is a class for manipulation of POD hyperlinks. Usage:
 
-  my $link = Pod::Hyperlink->new('alternative text|page/"section in page"');
+  my $link = Marek::Pod::Hyperlink->new('alternative text|page/"section in page"');
 
-The B<Pod::Hyperlink> class is mainly designed to parse the contents of the
+The B<Marek::Pod::Hyperlink> class is mainly designed to parse the contents of the
 C<LE<lt>...E<gt>> sequence, providing a simple interface for accessing the
 different parts of a POD hyperlink for further processing. It can also be
 used to construct hyperlinks.
 
 =over 4
 
-=item Pod::Hyperlink-E<gt>new()
+=item Marek::Pod::Hyperlink-E<gt>new()
 
 The B<new()> method can either be passed a set of key/value pairs or a single
 scalar value, namely the contents of a C<LE<lt>...E<gt>> sequence. An object
-of the class C<Pod::Hyperlink> is returned. The value C<undef> indicates a
+of the class C<Marek::Pod::Hyperlink> is returned. The value C<undef> indicates a
 failure, the error message is stored in C<$@>.
 
 =cut
@@ -621,25 +621,25 @@ sub _invalid_link {
 }
 
 #-----------------------------------------------------------------------------
-# Pod::Cache
+# Marek::Pod::Cache
 #
 # class to hold POD page details
 #-----------------------------------------------------------------------------
 
-package Pod::Cache;
+package Marek::Pod::Cache;
 
-=head2 Pod::Cache
+=head2 Marek::Pod::Cache
 
-B<Pod::Cache> holds information about a set of POD documents,
+B<Marek::Pod::Cache> holds information about a set of POD documents,
 especially the nodes for hyperlinks.
 The following methods are available:
 
 =over 4
 
-=item Pod::Cache-E<gt>new()
+=item Marek::Pod::Cache-E<gt>new()
 
 Create a new cache object. This object can hold an arbitrary number of
-POD documents of class Pod::Cache::Item.
+POD documents of class Marek::Pod::Cache::Item.
 
 =cut
 
@@ -661,7 +661,7 @@ list of all cache elements.
 sub item {
     my ($self,%param) = @_;
     if(%param) {
-        my $item = Pod::Cache::Item->new(%param);
+        my $item = Marek::Pod::Cache::Item->new(%param);
         push(@$self, $item);
         return $item;
     }
@@ -673,7 +673,7 @@ sub item {
 =item $cache-E<gt>find_page($name)
 
 Look for a POD document named C<$name> in the cache. Returns the
-reference to the corresponding Pod::Cache::Item object or undef if
+reference to the corresponding Marek::Pod::Cache::Item object or undef if
 not found.
 
 =back
@@ -690,19 +690,19 @@ sub find_page {
     return;
 }
 
-package Pod::Cache::Item;
+package Marek::Pod::Cache::Item;
 
-=head2 Pod::Cache::Item
+=head2 Marek::Pod::Cache::Item
 
-B<Pod::Cache::Item> holds information about individual POD documents,
-that can be grouped in a Pod::Cache object.
+B<Marek::Pod::Cache::Item> holds information about individual POD documents,
+that can be grouped in a Marek::Pod::Cache object.
 It is intended to hold information about the hyperlink nodes of POD
 documents.
 The following methods are available:
 
 =over 4
 
-=item Pod::Cache::Item-E<gt>new()
+=item Marek::Pod::Cache::Item-E<gt>new()
 
 Create a new object.
 
@@ -725,7 +725,7 @@ sub initialize {
 
 =item $cacheitem-E<gt>page()
 
-Set/retrieve the POD document name (e.g. "Pod::Parser").
+Set/retrieve the POD document name (e.g. "Marek::Pod::Parser").
 
 =cut
 
@@ -847,7 +847,7 @@ processing tools by Tom Christiansen, Brad Appleton and Russ Allbery.
 
 =head1 SEE ALSO
 
-L<pod2man>, L<pod2roff>, L<Pod::Parser>, L<Pod::Checker>,
+L<pod2man>, L<pod2roff>, L<Marek::Pod::Parser>, L<Marek::Pod::Checker>,
 L<pod2html>
 
 =cut

@@ -1,4 +1,4 @@
-# Pod::PlainText -- Convert POD data to formatted ASCII text.
+# Marek::Pod::PlainText -- Convert POD data to formatted ASCII text.
 # $Id: Text.pm,v 2.1 1999/09/20 11:53:33 eagle Exp $
 #
 # Copyright 1999-2000 by Russ Allbery <rra@stanford.edu>
@@ -6,28 +6,28 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the same terms as Perl itself.
 #
-# This module is intended to be a replacement for Pod::Text, and attempts to
+# This module is intended to be a replacement for Marek::Pod::Text, and attempts to
 # match its output except for some specific circumstances where other
-# decisions seemed to produce better output.  It uses Pod::Parser and is
+# decisions seemed to produce better output.  It uses Marek::Pod::Parser and is
 # designed to be very easy to subclass.
 
 ############################################################################
 # Modules and declarations
 ############################################################################
 
-package Pod::PlainText;
+package Marek::Pod::PlainText;
 use strict;
 
 require 5.005;
 
 use Carp qw(carp croak);
-use Pod::Select ();
+use Marek::Pod::Select ();
 
 use vars qw(@ISA %ESCAPES $VERSION);
 
-# We inherit from Pod::Select instead of Pod::Parser so that we can be used
-# by Pod::Usage.
-@ISA = qw(Pod::Select);
+# We inherit from Marek::Pod::Select instead of Marek::Pod::Parser so that we can be used
+# by Marek::Pod::Usage.
+@ISA = qw(Marek::Pod::Select);
 
 $VERSION = '2.04';
 
@@ -42,7 +42,7 @@ BEGIN {
 # Table of supported E<> escapes
 ############################################################################
 
-# This table is taken near verbatim from Pod::PlainText in Pod::Parser,
+# This table is taken near verbatim from Marek::Pod::PlainText in Marek::Pod::Parser,
 # which got it near verbatim from the original Pod::Text.  It is therefore
 # credited to Tom Christiansen, and I'm glad I didn't have to write it.  :)
 %ESCAPES = (
@@ -145,9 +145,9 @@ sub initialize {
 ############################################################################
 
 # Called for each command paragraph.  Gets the command, the associated
-# paragraph, the line number, and a Pod::Paragraph object.  Just dispatches
+# paragraph, the line number, and a Marek::Pod::Paragraph object.  Just dispatches
 # the command to a method named the same as the command.  =cut is handled
-# internally by Pod::Parser.
+# internally by Marek::Pod::Parser.
 sub command {
     my $self = shift;
     my $command = shift;
@@ -163,7 +163,7 @@ sub command {
 }
 
 # Called for a verbatim paragraph.  Gets the paragraph, the line number, and
-# a Pod::Paragraph object.  Just output it verbatim, but with tabs converted
+# a Marek::Pod::Paragraph object.  Just output it verbatim, but with tabs converted
 # to spaces.
 sub verbatim {
     my $self = shift;
@@ -176,7 +176,7 @@ sub verbatim {
 }
 
 # Called for a regular text block.  Gets the paragraph, the line number, and
-# a Pod::Paragraph object.  Perform interpolation and output the results.
+# a Marek::Pod::Paragraph object.  Perform interpolation and output the results.
 sub textblock {
     my $self = shift;
     return if $$self{EXCLUDE};
@@ -237,7 +237,7 @@ sub textblock {
 }
 
 # Called for an interior sequence.  Gets the command, argument, and a
-# Pod::InteriorSequence object and is expected to return the resulting text.
+# Marek::Pod::InteriorSequence object and is expected to return the resulting text.
 # Calls code, bold, italic, file, and link to handle those types of
 # sequences, and handles S<>, E<>, X<>, and Z<> directly.
 sub interior_sequence {
@@ -571,7 +571,7 @@ sub pod2text {
     }
 
     # Now that we know what arguments we're using, create the parser.
-    my $parser = Pod::PlainText->new (@args);
+    my $parser = Marek::Pod::PlainText->new (@args);
 
     # If two arguments were given, the second argument is going to be a file
     # handle.  That means we want to call parse_from_filehandle(), which
@@ -602,12 +602,12 @@ __END__
 
 =head1 NAME
 
-Pod::PlainText - Convert POD data to formatted ASCII text
+Marek::Pod::PlainText - Convert POD data to formatted ASCII text
 
 =head1 SYNOPSIS
 
-    use Pod::PlainText;
-    my $parser = Pod::PlainText->new (sentence => 0, width => 78);
+    use Marek::Pod::PlainText;
+    my $parser = Marek::Pod::PlainText->new (sentence => 0, width => 78);
 
     # Read POD from STDIN and write to STDOUT.
     $parser->parse_from_filehandle;
@@ -617,14 +617,14 @@ Pod::PlainText - Convert POD data to formatted ASCII text
 
 =head1 DESCRIPTION
 
-Pod::PlainText is a module that can convert documentation in the POD format (the
+Marek::Pod::PlainText is a module that can convert documentation in the POD format (the
 preferred language for documenting Perl) into formatted ASCII.  It uses no
 special formatting controls or codes whatsoever, and its output is therefore
 suitable for nearly any device.
 
-As a derived class from Pod::Parser, Pod::PlainText supports the same methods and
-interfaces.  See L<Pod::Parser> for all the details; briefly, one creates a
-new parser with C<Pod::PlainText-E<gt>new()> and then calls either
+As a derived class from Marek::Pod::Parser, Marek::Pod::PlainText supports the same methods and
+interfaces.  See L<Marek::Pod::Parser> for all the details; briefly, one creates a
+new parser with C<Marek::Pod::PlainText-E<gt>new()> and then calls either
 parse_from_filehandle() or parse_from_file().
 
 new() can take options, in the form of key/value pairs, that control the
@@ -653,7 +653,7 @@ result in more pleasing output.
 
 =item sentence
 
-If set to a true value, Pod::PlainText will assume that each sentence ends in two
+If set to a true value, Marek::Pod::PlainText will assume that each sentence ends in two
 spaces, and will try to preserve that spacing.  If set to false, all
 consecutive whitespace in non-verbatim paragraphs is compressed into a
 single space.  Defaults to true.
@@ -664,12 +664,12 @@ The column at which to wrap text on the right-hand side.  Defaults to 76.
 
 =back
 
-The standard Pod::Parser method parse_from_filehandle() takes up to two
+The standard Marek::Pod::Parser method parse_from_filehandle() takes up to two
 arguments, the first being the file handle to read POD from and the second
 being the file handle to write the formatted output to.  The first defaults
 to STDIN if not given, and the second defaults to STDOUT.  The method
 parse_from_file() is almost identical, except that its two arguments are the
-input and output disk files instead.  See L<Pod::Parser> for the specific
+input and output disk files instead.  See L<Marek::Pod::Parser> for the specific
 details.
 
 =head1 DIAGNOSTICS
@@ -679,26 +679,26 @@ details.
 =item Bizarre space in item
 
 (W) Something has gone wrong in internal C<=item> processing.  This message
-indicates a bug in Pod::PlainText; you should never see it.
+indicates a bug in Marek::Pod::PlainText; you should never see it.
 
 =item Can't open %s for reading: %s
 
-(F) Pod::PlainText was invoked via the compatibility mode pod2text() interface
+(F) Marek::Pod::PlainText was invoked via the compatibility mode pod2text() interface
 and the input file it was given could not be opened.
 
 =item Unknown escape: %s
 
-(W) The POD source contained an C<EE<lt>E<gt>> escape that Pod::PlainText didn't
+(W) The POD source contained an C<EE<lt>E<gt>> escape that Marek::Pod::PlainText didn't
 know about.
 
 =item Unknown sequence: %s
 
 (W) The POD source contained a non-standard internal sequence (something of
-the form C<XE<lt>E<gt>>) that Pod::PlainText didn't know about.
+the form C<XE<lt>E<gt>>) that Marek::Pod::PlainText didn't know about.
 
 =item Unmatched =back
 
-(W) Pod::PlainText encountered a C<=back> command that didn't correspond to an
+(W) Marek::Pod::PlainText encountered a C<=back> command that didn't correspond to an
 C<=over> command.
 
 =back
@@ -711,7 +711,7 @@ output, due to an internal implementation detail.
 =head1 NOTES
 
 This is a replacement for an earlier Pod::Text module written by Tom
-Christiansen.  It has a revamped interface, since it now uses Pod::Parser,
+Christiansen.  It has a revamped interface, since it now uses Marek::Pod::Parser,
 but an interface roughly compatible with the old Pod::Text::pod2text()
 function is still available.  Please change to the new calling convention,
 though.
@@ -723,7 +723,7 @@ subclass of it does.  Look for L<Pod::Text::Termcap|Pod::Text::Termcap>.
 
 =head1 SEE ALSO
 
-L<Pod::Parser|Pod::Parser>, L<Pod::Text::Termcap|Pod::Text::Termcap>,
+L<Marek::Pod::Parser|Marek::Pod::Parser>, L<Pod::Text::Termcap|Pod::Text::Termcap>,
 pod2text(1)
 
 =head1 AUTHOR
@@ -732,7 +732,7 @@ Please report bugs using L<http://rt.cpan.org>.
 
 Russ Allbery E<lt>rra@stanford.eduE<gt>, based I<very> heavily on the
 original Pod::Text by Tom Christiansen E<lt>tchrist@mox.perl.comE<gt> and
-its conversion to Pod::Parser by Brad Appleton
+its conversion to Marek::Pod::Parser by Brad Appleton
 E<lt>bradapp@enteract.comE<gt>.
 
 =cut

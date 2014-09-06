@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/Checker.pm -- check pod documents for syntax errors
+# Marek/Pod/Checker.pm -- check pod documents for syntax errors
 #
 # Copyright (C) 1994-2000 by Bradford Appleton. All rights reserved.
 # This file is part of "PodParser". PodParser is free software;
@@ -7,26 +7,26 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::Checker;
+package Marek::Pod::Checker;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT %VALID_COMMANDS %VALID_SEQUENCES);
 $VERSION = '1.45';  ## Current version of this package
 require  5.005;    ## requires this Perl version or later
 
-use Pod::ParseUtils; ## for hyperlinks and lists
+use Marek::Pod::ParseUtils; ## for hyperlinks and lists
 
 =head1 NAME
 
-Pod::Checker, podchecker() - check pod documents for syntax errors
+Marek::Pod::Checker, podchecker() - check pod documents for syntax errors
 
 =head1 SYNOPSIS
 
-  use Pod::Checker;
+  use Marek::Pod::Checker;
 
   $syntax_okay = podchecker($filepath, $outputpath, %options);
 
-  my $checker = new Pod::Checker %options;
+  my $checker = new Marek::Pod::Checker %options;
   $checker->parse_from_file($filepath, \*STDERR);
 
 =head1 OPTIONS/ARGUMENTS
@@ -55,7 +55,7 @@ trigger additional warnings. See L<"Warnings">.
 B<podchecker> will perform syntax checking of Perl5 POD format documentation.
 
 Curious/ambitious users are welcome to propose additional features they wish
-to see in B<Pod::Checker> and B<podchecker> and verify that the checks are
+to see in B<Marek::Pod::Checker> and B<podchecker> and verify that the checks are
 consistent with L<perlpod>.
 
 The following checks are currently performed:
@@ -329,10 +329,10 @@ POD translators can use this feature to syntax-check and get the nodes in
 a first pass before actually starting to convert. This is expensive in terms
 of execution time, but allows for very robust conversions.
 
-Since PodParser-1.24 the B<Pod::Checker> module uses only the B<poderror>
+Since PodParser-1.24 the B<Marek::Pod::Checker> module uses only the B<poderror>
 method to print errors and warnings. The summary output (e.g.
 "Pod syntax OK") has been dropped from the module and has been included in
-B<podchecker> (the script). This allows users of B<Pod::Checker> to
+B<podchecker> (the script). This allows users of B<Marek::Pod::Checker> to
 control completely the output behavior. Users of B<podchecker> (the script)
 get the well-known behavior.
 
@@ -343,9 +343,9 @@ get the well-known behavior.
 #use diagnostics;
 use Carp qw(croak);
 use Exporter;
-use Pod::Parser;
+use Marek::Pod::Parser;
 
-@ISA = qw(Pod::Parser);
+@ISA = qw(Marek::Pod::Parser);
 @EXPORT = qw(&podchecker);
 
 my %VALID_COMMANDS = (
@@ -506,7 +506,7 @@ sub podchecker {
     $outfile ||= \*STDERR;
 
     ## Now create a pod checker
-    my $checker = new Pod::Checker(%options);
+    my $checker = new Marek::Pod::Checker(%options);
 
     ## Now check the pod document for errors
     $checker->parse_from_file($infile, $outfile);
@@ -525,10 +525,10 @@ sub podchecker {
 
 =over 4
 
-=item C<Pod::Checker-E<gt>new( %options )>
+=item C<Marek::Pod::Checker-E<gt>new( %options )>
 
-Return a reference to a new Pod::Checker object that inherits from
-Pod::Parser and is used for calling the required methods later. The
+Return a reference to a new Marek::Pod::Checker object that inherits from
+Marek::Pod::Parser and is used for calling the required methods later. The
 following options are recognized:
 
 C<-warnings =E<gt> num>
@@ -537,7 +537,7 @@ the more warnings are printed. Currently there are only levels 1 and 2.
 
 C<-quiet =E<gt> num>
   If C<num> is true, do not print any errors/warnings. This is useful
-when Pod::Checker is used to munge POD code into plain text from within
+when Marek::Pod::Checker is used to munge POD code into plain text from within
 POD formatters.
 
 =cut
@@ -722,7 +722,7 @@ sub idx {
 
 Add (if argument specified) and retrieve the hyperlinks (as defined by
 C<LE<lt>E<gt>>) of the current POD. They consist of a 2-item array: line
-number and C<Pod::Hyperlink> object.
+number and C<Marek::Pod::Hyperlink> object.
 
 =back
 
@@ -738,7 +738,7 @@ sub hyperlink {
     @{$self->{_links}};
 }
 
-## overrides for Pod::Parser
+## overrides for Marek::Pod::Parser
 
 sub end_pod {
     ## Do some final checks and
@@ -1033,7 +1033,7 @@ sub command {
 sub _open_list
 {
     my ($self,$indent,$line,$file) = @_;
-    my $list = Pod::List->new(
+    my $list = Marek::Pod::List->new(
            -indent => $indent,
            -start => $line,
            -file => $file);
@@ -1151,7 +1151,7 @@ sub _check_ptree {
         }
         elsif($cmd eq 'L') {
             # try to parse the hyperlink
-            my $link = Pod::Hyperlink->new($contents->raw_text());
+            my $link = Marek::Pod::Hyperlink->new($contents->raw_text());
             unless(defined $link) {
                 $self->poderror({ -line => $line, -file => $file,
                     -severity => 'ERROR',

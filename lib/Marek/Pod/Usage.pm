@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/Usage.pm -- print usage messages for the running script.
+# Marek/Pod/Usage.pm -- print usage messages for the running script.
 #
 # Copyright (C) 1996-2000 by Bradford Appleton. All rights reserved.
 # This file is part of "PodParser". PodParser is free software;
@@ -7,7 +7,7 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::Usage;
+package Marek::Pod::Usage;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT);
@@ -16,11 +16,11 @@ require  5.005;    ## requires this Perl version or later
 
 =head1 NAME
 
-Pod::Usage, pod2usage() - print a usage message from embedded pod documentation
+Marek::Pod::Usage, pod2usage() - print a usage message from embedded pod documentation
 
 =head1 SYNOPSIS
 
-  use Pod::Usage
+  use Marek::Pod::Usage
 
   my $message_text  = "This text precedes the usage message.";
   my $exit_status   = 2;          ## The exit status to use
@@ -98,7 +98,7 @@ is 1, then the "SYNOPSIS" section, along with any section entitled
 corresponding value is 2 or more then the entire manpage is printed.
 
 The special verbosity level 99 requires to also specify the -sections
-parameter; then these sections are extracted (see L<Pod::Select>)
+parameter; then these sections are extracted (see L<Marek::Pod::Select>)
 and printed.
 
 =item C<-sections>
@@ -126,7 +126,7 @@ file indicated by C<$0> (C<$PROGRAM_NAME> for users of F<English.pm>).
 If you are calling B<pod2usage()> from a module and want to display
 that module's POD, you can use this:
 
-  use Pod::Find qw(pod_where);
+  use Marek::Pod::Find qw(pod_where);
   pod2usage( -input => pod_where({-inc => 1}, __PACKAGE__) );
 
 =item C<-pathlist>
@@ -141,7 +141,7 @@ MSWin32 and DOS).
 
 =item C<-noperldoc>
 
-By default, Pod::Usage will call L<perldoc> when -verbose >= 2 is
+By default, Marek::Pod::Usage will call L<perldoc> when -verbose >= 2 is
 specified. This does not work well e.g. if the script was packed
 with L<PAR>. The -noperldoc option suppresses the external call to
 L<perldoc> and uses the simple text formatter (L<Pod::Text>) to 
@@ -235,7 +235,7 @@ use them by default if you don't expressly tell it to do otherwise.  The
 ability of B<pod2usage()> to accept a single number or a string makes it
 convenient to use as an innocent looking error message handling function:
 
-    use Pod::Usage;
+    use Marek::Pod::Usage;
     use Getopt::Long;
 
     ## Parse options
@@ -250,7 +250,7 @@ Some user's however may feel that the above "economy of expression" is
 not particularly readable nor consistent and may instead choose to do
 something more like the following:
 
-    use Pod::Usage;
+    use Marek::Pod::Usage;
     use Getopt::Long;
 
     ## Parse options
@@ -347,11 +347,11 @@ option (usually C<-H> or C<-help>) to print a (possibly more verbose)
 usage message to C<STDOUT>. Some scripts may even wish to go so far as to
 provide a means of printing their complete documentation to C<STDOUT>
 (perhaps by allowing a C<-man> option). The following complete example
-uses B<Pod::Usage> in combination with B<Getopt::Long> to do all of these
+uses B<Marek::Pod::Usage> in combination with B<Getopt::Long> to do all of these
 things:
 
     use Getopt::Long;
-    use Pod::Usage;
+    use Marek::Pod::Usage;
 
     my $man = 0;
     my $help = 0;
@@ -368,7 +368,7 @@ things:
 
     =head1 NAME
 
-    sample - Using GetOpt::Long and Pod::Usage
+    sample - Using GetOpt::Long and Marek::Pod::Usage
 
     =head1 SYNOPSIS
 
@@ -413,7 +413,7 @@ similar to the following:
 
 In the pathological case that a script is called via a relative path
 I<and> the script itself changes the current working directory
-(see L<perlfunc/chdir>) I<before> calling pod2usage, Pod::Usage will
+(see L<perlfunc/chdir>) I<before> calling pod2usage, Marek::Pod::Usage will
 fail even on robust platforms. Don't do that.
 
 =head1 AUTHOR
@@ -434,7 +434,7 @@ with re-writing this manpage.
 
 =head1 SEE ALSO
 
-L<Pod::Parser>, L<Getopt::Long>, L<Pod::Find>
+L<Marek::Pod::Parser>, L<Getopt::Long>, L<Marek::Pod::Find>
 
 =cut
 
@@ -453,12 +453,12 @@ BEGIN {
        @ISA = qw( Pod::Text );
     }
     else {
-       require Pod::PlainText;
-       @ISA = qw( Pod::PlainText );
+       require Marek::Pod::PlainText;
+       @ISA = qw( Marek::Pod::PlainText );
     }
 }
 
-require Pod::Select;
+require Marek::Pod::Select;
 
 ##---------------------------------------------------------------------------
 
@@ -538,7 +538,7 @@ sub pod2usage {
     }
 
     ## Now create a pod reader and constrain it to the desired sections.
-    my $parser = new Pod::Usage(USAGE_OPTIONS => \%opts);
+    my $parser = new Marek::Pod::Usage(USAGE_OPTIONS => \%opts);
     if ($opts{'-verbose'} == 0) {
         $parser->select('(?:SYNOPSIS|USAGE)\s*');
     }
@@ -611,7 +611,7 @@ sub select {
     if ($ISA[0]->can('select')) {
         $self->SUPER::select(@sections);
     } else {
-        # we're using Pod::Simple - need to mimic the behavior of Pod::Select
+        # we're using Pod::Simple - need to mimic the behavior of Marek::Pod::Select
         my $add = ($sections[0] eq '+') ? shift(@sections) : '';
         ## Reset the set of sections to use
         unless (@sections) {
@@ -623,7 +623,7 @@ sub select {
         my $sref = $self->{USAGE_SELECT};
         ## Compile each spec
         for my $spec (@sections) {
-          my $cs = Pod::Select::_compile_section_spec($spec);
+          my $cs = Marek::Pod::Select::_compile_section_spec($spec);
           if ( defined $cs ) {
             ## Store them in our sections array
             push(@$sref, $cs);
@@ -638,7 +638,7 @@ sub select {
 sub seq_i { return $_[1] }
 
 # This overrides the Pod::Text method to do something very akin to what
-# Pod::Select did as well as the work done below by preprocess_paragraph.
+# Marek::Pod::Select did as well as the work done below by preprocess_paragraph.
 # Note that the below is very, very specific to Pod::Text.
 sub _handle_element_end {
     my ($self, $element) = @_;
@@ -660,7 +660,7 @@ sub _handle_element_end {
             my @headings = @{$$self{USAGE_HEADINGS}};
             for my $section_spec ( @{$$self{USAGE_SELECT}} ) {
                 my $match = 1;
-                for (my $i = 0; $i < $Pod::Select::MAX_HEADING_LEVEL; ++$i) {
+                for (my $i = 0; $i < $Marek::Pod::Select::MAX_HEADING_LEVEL; ++$i) {
                     $headings[$i] = '' unless defined $headings[$i];
                     my $regex   = $section_spec->[$i];
                     my $negated = ($regex =~ s/^\!//);
@@ -701,7 +701,7 @@ sub start_document {
     print $out_fh "$msg\n";
 }
 
-# required for old Pod::Parser API
+# required for old Marek::Pod::Parser API
 sub begin_pod {
     my $self = shift;
     $self->SUPER::begin_pod();  ## Have to call superclass

@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/InputObjects.pm -- package which defines objects for input streams
+# Marek/Pod/InputObjects.pm -- package which defines objects for input streams
 # and paragraphs and commands when parsing POD docs.
 #
 # Copyright (C) 1996-2000 by Bradford Appleton. All rights reserved.
@@ -8,7 +8,7 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::InputObjects;
+package Marek::Pod::InputObjects;
 use strict;
 
 use vars qw($VERSION);
@@ -19,11 +19,11 @@ require  5.005;    ## requires this Perl version or later
 
 =head1 NAME
 
-Pod::InputObjects - objects representing POD input paragraphs, commands, etc.
+Marek::Pod::InputObjects - objects representing POD input paragraphs, commands, etc.
 
 =head1 SYNOPSIS
 
-    use Pod::InputObjects;
+    use Marek::Pod::InputObjects;
 
 =head1 REQUIRES
 
@@ -35,7 +35,7 @@ Nothing.
 
 =head1 DESCRIPTION
 
-This module defines some basic input objects used by B<Pod::Parser> when
+This module defines some basic input objects used by B<Marek::Pod::Parser> when
 reading and parsing POD text from an input source. The following objects
 are defined:
 
@@ -43,7 +43,7 @@ are defined:
 
 =begin __PRIVATE__
 
-=item package B<Pod::InputSource>
+=item package B<Marek::Pod::InputSource>
 
 An object corresponding to a source of POD input text. It is mostly a
 wrapper around a filehandle or C<IO::Handle>-type object (or anything
@@ -52,22 +52,22 @@ additional information relevant to the parsing of PODs.
 
 =end __PRIVATE__
 
-=item package B<Pod::Paragraph>
+=item package B<Marek::Pod::Paragraph>
 
 An object corresponding to a paragraph of POD input text. It may be a
 plain paragraph, a verbatim paragraph, or a command paragraph (see
 L<perlpod>).
 
-=item package B<Pod::InteriorSequence>
+=item package B<Marek::Pod::InteriorSequence>
 
 An object corresponding to an interior sequence command from the POD
 input text (see L<perlpod>).
 
-=item package B<Pod::ParseTree>
+=item package B<Marek::Pod::ParseTree>
 
 An object corresponding to a tree of parsed POD text. Each "node" in
 a parse-tree (or I<ptree>) is either a text-string or a reference to
-a B<Pod::InteriorSequence> object. The nodes appear in the parse-tree
+a B<Marek::Pod::InteriorSequence> object. The nodes appear in the parse-tree
 in the order in which they were parsed from left-to-right.
 
 =back
@@ -79,19 +79,19 @@ sections which follow.
 
 #############################################################################
 
-package Pod::InputSource;
+package Marek::Pod::InputSource;
 
 ##---------------------------------------------------------------------------
 
 =begin __PRIVATE__
 
-=head1 B<Pod::InputSource>
+=head1 B<Marek::Pod::InputSource>
 
 This object corresponds to an input source or stream of POD
 documentation. When parsing PODs, it is necessary to associate and store
 certain context information with each input source. All of this
 information is kept together with the stream itself in one of these
-C<Pod::InputSource> objects. Each such object is merely a wrapper around
+C<Marek::Pod::InputSource> objects. Each such object is merely a wrapper around
 an C<IO::Handle> object of some kind (or at least something that
 implements the C<getline()> method). They have the following
 methods/attributes:
@@ -106,14 +106,14 @@ methods/attributes:
 
 =head2 B<new()>
 
-        my $pod_input1 = Pod::InputSource->new(-handle => $filehandle);
-        my $pod_input2 = new Pod::InputSource(-handle => $filehandle,
+        my $pod_input1 = Marek::Pod::InputSource->new(-handle => $filehandle);
+        my $pod_input2 = new Marek::Pod::InputSource(-handle => $filehandle,
                                               -name   => $name);
-        my $pod_input3 = new Pod::InputSource(-handle => \*STDIN);
-        my $pod_input4 = Pod::InputSource->new(-handle => \*STDIN,
+        my $pod_input3 = new Marek::Pod::InputSource(-handle => \*STDIN);
+        my $pod_input4 = Marek::Pod::InputSource->new(-handle => \*STDIN,
                                                -name => "(STDIN)");
 
-This is a class method that constructs a C<Pod::InputSource> object and
+This is a class method that constructs a C<Marek::Pod::InputSource> object and
 returns a reference to the new input source object. It takes one or more
 keyword arguments in the form of a hash. The keyword C<-handle> is
 required and designates the corresponding input handle. The keyword
@@ -214,11 +214,11 @@ sub was_cutting {
 
 #############################################################################
 
-package Pod::Paragraph;
+package Marek::Pod::Paragraph;
 
 ##---------------------------------------------------------------------------
 
-=head1 B<Pod::Paragraph>
+=head1 B<Marek::Pod::Paragraph>
 
 An object representing a paragraph of POD input text.
 It has the following methods/attributes:
@@ -227,20 +227,20 @@ It has the following methods/attributes:
 
 ##---------------------------------------------------------------------------
 
-=head2 Pod::Paragraph-E<gt>B<new()>
+=head2 Marek::Pod::Paragraph-E<gt>B<new()>
 
-        my $pod_para1 = Pod::Paragraph->new(-text => $text);
-        my $pod_para2 = Pod::Paragraph->new(-name => $cmd,
+        my $pod_para1 = Marek::Pod::Paragraph->new(-text => $text);
+        my $pod_para2 = Marek::Pod::Paragraph->new(-name => $cmd,
                                             -text => $text);
-        my $pod_para3 = new Pod::Paragraph(-text => $text);
-        my $pod_para4 = new Pod::Paragraph(-name => $cmd,
+        my $pod_para3 = new Marek::Pod::Paragraph(-text => $text);
+        my $pod_para4 = new Marek::Pod::Paragraph(-name => $cmd,
                                            -text => $text);
-        my $pod_para5 = Pod::Paragraph->new(-name => $cmd,
+        my $pod_para5 = Marek::Pod::Paragraph->new(-name => $cmd,
                                             -text => $text,
                                             -file => $filename,
                                             -line => $line_number);
 
-This is a class method that constructs a C<Pod::Paragraph> object and
+This is a class method that constructs a C<Marek::Pod::Paragraph> object and
 returns a reference to the new paragraph object. It may be given one or
 two keyword arguments. The C<-text> keyword indicates the corresponding
 text of the POD paragraph. The C<-name> keyword indicates the name of
@@ -405,11 +405,11 @@ sub file_line {
 
 #############################################################################
 
-package Pod::InteriorSequence;
+package Marek::Pod::InteriorSequence;
 
 ##---------------------------------------------------------------------------
 
-=head1 B<Pod::InteriorSequence>
+=head1 B<Marek::Pod::InteriorSequence>
 
 An object representing a POD interior sequence command.
 It has the following methods/attributes:
@@ -418,21 +418,21 @@ It has the following methods/attributes:
 
 ##---------------------------------------------------------------------------
 
-=head2 Pod::InteriorSequence-E<gt>B<new()>
+=head2 Marek::Pod::InteriorSequence-E<gt>B<new()>
 
-        my $pod_seq1 = Pod::InteriorSequence->new(-name => $cmd
+        my $pod_seq1 = Marek::Pod::InteriorSequence->new(-name => $cmd
                                                   -ldelim => $delimiter);
-        my $pod_seq2 = new Pod::InteriorSequence(-name => $cmd,
+        my $pod_seq2 = new Marek::Pod::InteriorSequence(-name => $cmd,
                                                  -ldelim => $delimiter);
-        my $pod_seq3 = new Pod::InteriorSequence(-name => $cmd,
+        my $pod_seq3 = new Marek::Pod::InteriorSequence(-name => $cmd,
                                                  -ldelim => $delimiter,
                                                  -file => $filename,
                                                  -line => $line_number);
 
-        my $pod_seq4 = new Pod::InteriorSequence(-name => $cmd, $ptree);
-        my $pod_seq5 = new Pod::InteriorSequence($cmd, $ptree);
+        my $pod_seq4 = new Marek::Pod::InteriorSequence(-name => $cmd, $ptree);
+        my $pod_seq5 = new Marek::Pod::InteriorSequence($cmd, $ptree);
 
-This is a class method that constructs a C<Pod::InteriorSequence> object
+This is a class method that constructs a C<Marek::Pod::InteriorSequence> object
 and returns a reference to the new interior sequence object. It should
 be given two keyword arguments.  The C<-ldelim> keyword indicates the
 corresponding left-delimiter of the interior sequence (e.g. 'E<lt>').
@@ -441,8 +441,8 @@ sequence command, such as C<I> or C<B> or C<C>. The C<-file> and
 C<-line> keywords indicate the filename and line number corresponding
 to the beginning of the interior sequence. If the C<$ptree> argument is
 given, it must be the last argument, and it must be either string, or
-else an array-ref suitable for passing to B<Pod::ParseTree::new> (or
-it may be a reference to a Pod::ParseTree object).
+else an array-ref suitable for passing to B<Marek::Pod::ParseTree::new> (or
+it may be a reference to a Marek::Pod::ParseTree object).
 
 =cut
 
@@ -477,11 +477,11 @@ sub new {
     };
 
     ## Initialize contents if they havent been already
-    my $ptree = $self->{'-ptree'} || new Pod::ParseTree();
+    my $ptree = $self->{'-ptree'} || new Marek::Pod::ParseTree();
     if ( ref $ptree =~ /^(ARRAY)?$/ ) {
         ## We have an array-ref, or a normal scalar. Pass it as an
         ## an argument to the ptree-constructor
-        $ptree = new Pod::ParseTree($1 ? [$ptree] : $ptree);
+        $ptree = new Marek::Pod::ParseTree($1 ? [$ptree] : $ptree);
     }
     $self->{'-ptree'} = $ptree;
 
@@ -518,7 +518,7 @@ sub _set_child2parent_links {
    ## Make sure any sequences know who their parent is
    for (@children) {
       next  unless (length  and  ref  and  ref ne 'SCALAR');
-      if (UNIVERSAL::isa($_, 'Pod::InteriorSequence') or
+      if (UNIVERSAL::isa($_, 'Marek::Pod::InteriorSequence') or
           UNIVERSAL::can($_, 'nested'))
       {
           $_->nested($self);
@@ -535,7 +535,7 @@ sub _unset_child2parent_links {
    for (@$ptree) {
       next  unless (length  and  ref  and  ref ne 'SCALAR');
       $_->_unset_child2parent_links()
-          if UNIVERSAL::isa($_, 'Pod::InteriorSequence');
+          if UNIVERSAL::isa($_, 'Marek::Pod::InteriorSequence');
    }
 }
 
@@ -696,7 +696,7 @@ sub file_line {
 
 ##---------------------------------------------------------------------------
 
-=head2 Pod::InteriorSequence::B<DESTROY()>
+=head2 Marek::Pod::InteriorSequence::B<DESTROY()>
 
 This method performs any necessary cleanup for the interior-sequence.
 If you override this method then it is B<imperative> that you invoke
@@ -716,16 +716,16 @@ sub DESTROY {
 
 #############################################################################
 
-package Pod::ParseTree;
+package Marek::Pod::ParseTree;
 
 ##---------------------------------------------------------------------------
 
-=head1 B<Pod::ParseTree>
+=head1 B<Marek::Pod::ParseTree>
 
 This object corresponds to a tree of parsed POD text. As POD text is
 scanned from left to right, it is parsed into an ordered list of
-text-strings and B<Pod::InteriorSequence> objects (in order of
-appearance). A B<Pod::ParseTree> object corresponds to this list of
+text-strings and B<Marek::Pod::InteriorSequence> objects (in order of
+appearance). A B<Marek::Pod::ParseTree> object corresponds to this list of
 strings and sequences. Each interior sequence in the parse-tree may
 itself contain a parse-tree (since interior sequences may be nested).
 
@@ -733,14 +733,14 @@ itself contain a parse-tree (since interior sequences may be nested).
 
 ##---------------------------------------------------------------------------
 
-=head2 Pod::ParseTree-E<gt>B<new()>
+=head2 Marek::Pod::ParseTree-E<gt>B<new()>
 
-        my $ptree1 = Pod::ParseTree->new;
-        my $ptree2 = new Pod::ParseTree;
-        my $ptree4 = Pod::ParseTree->new($array_ref);
-        my $ptree3 = new Pod::ParseTree($array_ref);
+        my $ptree1 = Marek::Pod::ParseTree->new;
+        my $ptree2 = new Marek::Pod::ParseTree;
+        my $ptree4 = Marek::Pod::ParseTree->new($array_ref);
+        my $ptree3 = new Marek::Pod::ParseTree($array_ref);
 
-This is a class method that constructs a C<Pod::Parse_tree> object and
+This is a class method that constructs a C<Marek::Pod::Parse_tree> object and
 returns a reference to the new parse-tree. If a single-argument is given,
 it must be a reference to an array, and is used to initialize the root
 (top) of the parse tree.
@@ -769,7 +769,7 @@ sub new {
 
 This method gets/sets the top node of the parse-tree. If no arguments are
 given, it returns the topmost node in the tree (the root), which is also
-a B<Pod::ParseTree>. If it is given a single argument that is a reference,
+a B<Marek::Pod::ParseTree>. If it is given a single argument that is a reference,
 then the reference is assumed to a parse-tree and becomes the new top node.
 Otherwise, if arguments are given, they are treated as the new list of
 children for the top node.
@@ -793,7 +793,7 @@ sub top {
 
 This method gets/sets the children of the top node in the parse-tree.
 If no arguments are given, it returns the list (array) of children
-(each of which should be either a string or a B<Pod::InteriorSequence>.
+(each of which should be either a string or a B<Marek::Pod::InteriorSequence>.
 Otherwise, if arguments are given, they are treated as the new list of
 children for the top node.
 
@@ -895,15 +895,15 @@ sub _unset_child2parent_links {
    for (@ptree) {
        next  unless (defined and length  and  ref  and  ref ne 'SCALAR');
        $_->_unset_child2parent_links()
-           if UNIVERSAL::isa($_, 'Pod::InteriorSequence');
+           if UNIVERSAL::isa($_, 'Marek::Pod::InteriorSequence');
    }
 }
 
 sub _set_child2parent_links {
-    ## nothing to do, Pod::ParseTrees cant have parent pointers
+    ## nothing to do, Marek::Pod::ParseTrees cant have parent pointers
 }
 
-=head2 Pod::ParseTree::B<DESTROY()>
+=head2 Marek::Pod::ParseTree::B<DESTROY()>
 
 This method performs any necessary cleanup for the parse-tree.
 If you override this method then it is B<imperative>
@@ -923,7 +923,7 @@ sub DESTROY {
 
 =head1 SEE ALSO
 
-See L<Pod::Parser>, L<Pod::Select>
+See L<Marek::Pod::Parser>, L<Marek::Pod::Select>
 
 =head1 AUTHOR
 

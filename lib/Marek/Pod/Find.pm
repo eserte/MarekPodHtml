@@ -1,16 +1,16 @@
 #############################################################################  
-# Pod/Find.pm -- finds files containing POD documentation
+# Marek/Pod/Find.pm -- finds files containing POD documentation
 #
 # Author: Marek Rouchal <marekr@cpan.org>
 # 
 # Copyright (C) 1999-2000 by Marek Rouchal (and borrowing code
 # from Nick Ing-Simmon's PodToHtml). All rights reserved.
-# This file is part of "PodParser". Pod::Find is free software;
+# This file is part of "PodParser". Marek::Pod::Find is free software;
 # you can redistribute it and/or modify it under the same terms
 # as Perl itself.
 #############################################################################
 
-package Pod::Find;
+package Marek::Pod::Find;
 use strict;
 
 use vars qw($VERSION);
@@ -29,11 +29,11 @@ BEGIN {
 
 =head1 NAME
 
-Pod::Find - find POD documents in directory trees
+Marek::Pod::Find - find POD documents in directory trees
 
 =head1 SYNOPSIS
 
-  use Pod::Find qw(pod_find simplify_name);
+  use Marek::Pod::Find qw(pod_find simplify_name);
   my %pods = pod_find({ -verbose => 1, -inc => 1 });
   foreach(keys %pods) {
      print "found library POD `$pods{$_}' in $_\n";
@@ -41,15 +41,15 @@ Pod::Find - find POD documents in directory trees
 
   print "podname=",simplify_name('a/b/c/mymodule.pod'),"\n";
 
-  $location = pod_where( { -inc => 1 }, "Pod::Find" );
+  $location = pod_where( { -inc => 1 }, "Marek::Pod::Find" );
 
 =head1 DESCRIPTION
 
-B<Pod::Find> provides a set of functions to locate POD files.  Note that
+B<Marek::Pod::Find> provides a set of functions to locate POD files.  Note that
 no function is exported by default to avoid pollution of your namespace,
 so be sure to specify them in the B<use> statement if you need them:
 
-  use Pod::Find qw(pod_find);
+  use Marek::Pod::Find qw(pod_find);
 
 From this version on the typical SCM (software configuration management)
 files/directories like RCS, CVS, SCCS, .svn are ignored.
@@ -527,7 +527,7 @@ C<pod_where> and C<contains_pod>.
 
 =head1 SEE ALSO
 
-L<Pod::Parser>, L<Pod::Checker>, L<perldoc>
+L<Marek::Pod::Parser>, L<Marek::Pod::Checker>, L<perldoc>
 
 =cut
 

@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/Parser.pm -- package which defines a base class for parsing POD docs.
+# Marek/Pod/Parser.pm -- package which defines a base class for parsing POD docs.
 #
 # Copyright (C) 1996-2000 by Bradford Appleton. All rights reserved.
 # This file is part of "PodParser". PodParser is free software;
@@ -7,7 +7,7 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::Parser;
+package Marek::Pod::Parser;
 use strict;
 
 ## These "variables" are used as local "glob aliases" for performance
@@ -19,14 +19,14 @@ require  5.005;    ## requires this Perl version or later
 
 =head1 NAME
 
-Pod::Parser - base class for creating POD filters and translators
+Marek::Pod::Parser - base class for creating POD filters and translators
 
 =head1 SYNOPSIS
 
-    use Pod::Parser;
+    use Marek::Pod::Parser;
 
     package MyParser;
-    @ISA = qw(Pod::Parser);
+    @ISA = qw(Marek::Pod::Parser);
 
     sub command { 
         my ($parser, $command, $paragraph, $line_num) = @_;
@@ -73,7 +73,7 @@ Pod::Parser - base class for creating POD filters and translators
 
 =head1 REQUIRES
 
-perl5.005, Pod::InputObjects, Exporter, Symbol, Carp
+perl5.005, Marek::Pod::InputObjects, Exporter, Symbol, Carp
 
 =head1 EXPORTS
 
@@ -81,19 +81,19 @@ Nothing.
 
 =head1 DESCRIPTION
 
-B<Pod::Parser> is a base class for creating POD filters and translators.
+B<Marek::Pod::Parser> is a base class for creating POD filters and translators.
 It handles most of the effort involved with parsing the POD sections
 from an input stream, leaving subclasses free to be concerned only with
 performing the actual translation of text.
 
-B<Pod::Parser> parses PODs, and makes method calls to handle the various
-components of the POD. Subclasses of B<Pod::Parser> override these methods
+B<Marek::Pod::Parser> parses PODs, and makes method calls to handle the various
+components of the POD. Subclasses of B<Marek::Pod::Parser> override these methods
 to translate the POD into whatever output format they desire.
 
 =head1 QUICK OVERVIEW
 
 To create a POD filter for translating POD documentation into some other
-format, you create a subclass of B<Pod::Parser> which typically overrides
+format, you create a subclass of B<Marek::Pod::Parser> which typically overrides
 just the base class implementation for the following methods:
 
 =over 2
@@ -126,9 +126,9 @@ B<preprocess_paragraph()>.
 
 Sometimes it may be necessary to make more than one pass over the input
 files. If this is the case you have several options. You can make the
-first pass using B<Pod::Parser> and override your methods to store the
+first pass using B<Marek::Pod::Parser> and override your methods to store the
 intermediate results in memory somewhere for the B<end_pod()> method to
-process. You could use B<Pod::Parser> for several passes with an
+process. You could use B<Marek::Pod::Parser> for several passes with an
 appropriate state variable to control the operation for each pass. If
 your input source can't be reset to start at the beginning, you can
 store it in some other structure as a string or an array and have that
@@ -140,20 +140,20 @@ like current font, indentation, horizontal or vertical position, or
 whatever else you like. Be sure to read L<"PRIVATE METHODS AND DATA">
 to avoid name collisions.
 
-For the most part, the B<Pod::Parser> base class should be able to
+For the most part, the B<Marek::Pod::Parser> base class should be able to
 do most of the input parsing for you and leave you free to worry about
 how to interpret the commands and translate the result.
 
 Note that all we have described here in this quick overview is the
-simplest most straightforward use of B<Pod::Parser> to do stream-based
-parsing. It is also possible to use the B<Pod::Parser::parse_text> function
+simplest most straightforward use of B<Marek::Pod::Parser> to do stream-based
+parsing. It is also possible to use the B<Marek::Pod::Parser::parse_text> function
 to do more sophisticated tree-based parsing. See L<"TREE-BASED PARSING">.
 
 =head1 PARSING OPTIONS
 
-A I<parse-option> is simply a named option of B<Pod::Parser> with a
+A I<parse-option> is simply a named option of B<Marek::Pod::Parser> with a
 value that corresponds to a certain specified behavior. These various
-behaviors of B<Pod::Parser> may be enabled/disabled by setting
+behaviors of B<Marek::Pod::Parser> may be enabled/disabled by setting
 or unsetting one or more I<parse-options> using the B<parseopts()> method.
 The set of currently accepted parse-options is as follows:
 
@@ -161,7 +161,7 @@ The set of currently accepted parse-options is as follows:
 
 =item B<-want_nonPODs> (default: unset)
 
-Normally (by default) B<Pod::Parser> will only provide access to
+Normally (by default) B<Marek::Pod::Parser> will only provide access to
 the POD sections of the input. Input paragraphs that are not part
 of the POD-format documentation are not made available to the caller
 (not even using B<preprocess_paragraph()>). Setting this option to a
@@ -172,24 +172,24 @@ paragraph, or some other input paragraph.
 
 =item B<-process_cut_cmd> (default: unset)
 
-Normally (by default) B<Pod::Parser> handles the C<=cut> POD directive
+Normally (by default) B<Marek::Pod::Parser> handles the C<=cut> POD directive
 by itself and does not pass it on to the caller for processing. Setting
-this option to a non-empty, non-zero value will cause B<Pod::Parser> to
+this option to a non-empty, non-zero value will cause B<Marek::Pod::Parser> to
 pass the C<=cut> directive to the caller just like any other POD command
 (and hence it may be processed by the B<command()> method).
 
-B<Pod::Parser> will still interpret the C<=cut> directive to mean that
+B<Marek::Pod::Parser> will still interpret the C<=cut> directive to mean that
 "cutting mode" has been (re)entered, but the caller will get a chance
 to capture the actual C<=cut> paragraph itself for whatever purpose
 it desires.
 
 =item B<-warnings> (default: unset)
 
-Normally (by default) B<Pod::Parser> recognizes a bare minimum of
+Normally (by default) B<Marek::Pod::Parser> recognizes a bare minimum of
 pod syntax errors and warnings and issues diagnostic messages
-for errors, but not for warnings. (Use B<Pod::Checker> to do more
+for errors, but not for warnings. (Use B<Marek::Pod::Checker> to do more
 thorough checking of POD syntax.) Setting this option to a non-empty,
-non-zero value will cause B<Pod::Parser> to issue diagnostics for
+non-zero value will cause B<Marek::Pod::Parser> to issue diagnostics for
 the few warnings it recognizes as well as the errors.
 
 =back
@@ -202,7 +202,7 @@ for the setting and unsetting of parse-options.
 #############################################################################
 
 #use diagnostics;
-use Pod::InputObjects;
+use Marek::Pod::InputObjects;
 use Carp;
 use Exporter;
 BEGIN {
@@ -217,7 +217,7 @@ BEGIN {
 
 =head1 RECOMMENDED SUBROUTINE/METHOD OVERRIDES
 
-B<Pod::Parser> provides several methods which most subclasses will probably
+B<Marek::Pod::Parser> provides several methods which most subclasses will probably
 want to override. These methods are as follows:
 
 =cut
@@ -249,8 +249,8 @@ the line-number of the beginning of the paragraph
 
 =item C<$pod_para>
 
-a reference to a C<Pod::Paragraph> object which contains further
-information about the paragraph command (see L<Pod::InputObjects>
+a reference to a C<Marek::Pod::Paragraph> object which contains further
+information about the paragraph command (see L<Marek::Pod::InputObjects>
 for details).
 
 =back
@@ -291,8 +291,8 @@ the line-number of the beginning of the paragraph
 
 =item C<$pod_para>
 
-a reference to a C<Pod::Paragraph> object which contains further
-information about the paragraph (see L<Pod::InputObjects>
+a reference to a C<Marek::Pod::Paragraph> object which contains further
+information about the paragraph (see L<Marek::Pod::InputObjects>
 for details).
 
 =back
@@ -331,8 +331,8 @@ the line-number of the beginning of the paragraph
 
 =item C<$pod_para>
 
-a reference to a C<Pod::Paragraph> object which contains further
-information about the paragraph (see L<Pod::InputObjects>
+a reference to a C<Marek::Pod::Paragraph> object which contains further
+information about the paragraph (see L<Marek::Pod::InputObjects>
 for details).
 
 =back
@@ -369,9 +369,9 @@ passed the sequence command C<$seq_cmd> and the corresponding text
 C<$seq_arg>. It is invoked by the B<interpolate()> method for each interior
 sequence that occurs in the string that it is passed. It should return
 the desired text string to be used in place of the interior sequence.
-The C<$pod_seq> argument is a reference to a C<Pod::InteriorSequence>
+The C<$pod_seq> argument is a reference to a C<Marek::Pod::InteriorSequence>
 object which contains further information about the interior sequence.
-Please see L<Pod::InputObjects> for details if you need to access this
+Please see L<Marek::Pod::InputObjects> for details if you need to access this
 additional information.
 
 Subclass implementations of this method may wish to invoke the 
@@ -394,7 +394,7 @@ sub interior_sequence {
 
 =head1 OPTIONAL SUBROUTINE/METHOD OVERRIDES
 
-B<Pod::Parser> provides several methods which subclasses may want to override
+B<Marek::Pod::Parser> provides several methods which subclasses may want to override
 to perform any special pre/post-processing. These methods do I<not> have to
 be overridden, but it may be useful for subclasses to take advantage of them.
 
@@ -404,9 +404,9 @@ be overridden, but it may be useful for subclasses to take advantage of them.
 
 =head1 B<new()>
 
-            my $parser = Pod::Parser->new();
+            my $parser = Marek::Pod::Parser->new();
 
-This is the constructor for B<Pod::Parser> and its subclasses. You
+This is the constructor for B<Marek::Pod::Parser> and its subclasses. You
 I<do not> need to override this method! It is capable of constructing
 subclass objects as well as base class objects, provided you use
 any of the following constructor invocation styles:
@@ -415,7 +415,7 @@ any of the following constructor invocation styles:
     my $parser2 = new MyParser();
     my $parser3 = $parser2->new();
 
-where C<MyParser> is some subclass of B<Pod::Parser>.
+where C<MyParser> is some subclass of B<Marek::Pod::Parser>.
 
 Using the syntax C<MyParser::new()> to invoke the constructor is I<not>
 recommended, but if you insist on being able to do this, then the
@@ -626,7 +626,7 @@ sub preprocess_paragraph {
 
 =head1 METHODS FOR PARSING AND PROCESSING
 
-B<Pod::Parser> provides several methods to process input text. These
+B<Marek::Pod::Parser> provides several methods to process input text. These
 methods typically won't need to be overridden (and in some cases they
 can't be overridden), but subclasses may want to invoke them to exploit
 their functionality.
@@ -651,9 +651,9 @@ line number corresponding to the beginning of C<$text>.
 
 B<parse_text()> will parse the given text into a parse-tree of "nodes."
 and interior-sequences.  Each "node" in the parse tree is either a
-text-string, or a B<Pod::InteriorSequence>.  The result returned is a
-parse-tree of type B<Pod::ParseTree>. Please see L<Pod::InputObjects>
-for more information about B<Pod::InteriorSequence> and B<Pod::ParseTree>.
+text-string, or a B<Marek::Pod::InteriorSequence>.  The result returned is a
+parse-tree of type B<Marek::Pod::ParseTree>. Please see L<Marek::Pod::InputObjects>
+for more information about B<Marek::Pod::InteriorSequence> and B<Marek::Pod::ParseTree>.
 
 If desired, an optional hash-ref may be specified as the first argument
 to customize certain aspects of the parse-tree that is created and
@@ -664,7 +664,7 @@ returned. The set of recognized option keywords are:
 =item B<-expand_seq> =E<gt> I<code-ref>|I<method-name>
 
 Normally, the parse-tree returned by B<parse_text()> will contain an
-unexpanded C<Pod::InteriorSequence> object for each interior-sequence
+unexpanded C<Marek::Pod::InteriorSequence> object for each interior-sequence
 encountered. Specifying B<-expand_seq> tells B<parse_text()> to "expand"
 every interior-sequence it sees by invoking the referenced function
 (or named method of the parser object) and using the return value as the
@@ -710,7 +710,7 @@ top-level node of the parse-tree).
 
 =item B<-expand_ptree> =E<gt> I<code-ref>|I<method-name>
 
-Rather than returning a C<Pod::ParseTree>, pass the parse-tree as an
+Rather than returning a C<Marek::Pod::ParseTree>, pass the parse-tree as an
 argument to the referenced subroutine (or named method of the parser
 object) and return the result instead of the parse-tree object.
 
@@ -771,7 +771,7 @@ sub parse_text {
     ## and strings we parse. Thus, by the end of our parsing, it should be
     ## the only thing left on our stack and all we have to do is return it!
     ##
-    my $seq       = Pod::ParseTree->new();
+    my $seq       = Marek::Pod::ParseTree->new();
     my @seq_stack = ($seq);
     my ($ldelim, $rdelim) = ('', '');
 
@@ -788,7 +788,7 @@ sub parse_text {
             ($cmd, $ldelim_orig) = ($1, $2);
             ($ldelim = $ldelim_orig) =~ s/\s+$//;
             ($rdelim = $ldelim) =~ tr/</>/;
-            $seq = Pod::InteriorSequence->new(
+            $seq = Marek::Pod::InteriorSequence->new(
                        -name   => $cmd,
                        -ldelim => $ldelim_orig,  -rdelim => $rdelim,
                        -file   => $file,    -line   => $line
@@ -932,9 +932,9 @@ sub parse_paragraph {
     ## Now we know this is block of text in a POD section!
 
     ##-----------------------------------------------------------------
-    ## This is a hook (hack ;-) for Pod::Select to do its thing without
-    ## having to override methods, but also without Pod::Parser assuming
-    ## $self is an instance of Pod::Select (if the _SELECTED_SECTIONS
+    ## This is a hook (hack ;-) for Marek::Pod::Select to do its thing without
+    ## having to override methods, but also without Marek::Pod::Parser assuming
+    ## $self is an instance of Marek::Pod::Select (if the _SELECTED_SECTIONS
     ## field exists then we assume there is an is_selected() method for
     ## us to invoke (calling $self->can('is_selected') could verify this
     ## but that is more overhead than I want to incur)
@@ -971,7 +971,7 @@ sub parse_paragraph {
         }
     }
     ## Save the attributes indicating how the command was specified.
-    $pod_para = new Pod::Paragraph(
+    $pod_para = new Marek::Pod::Paragraph(
           -name      => $cmd,
           -text      => $text,
           -prefix    => $pfx,
@@ -1268,7 +1268,7 @@ sub parse_from_file {
 
 =head1 ACCESSOR METHODS
 
-Clients of B<Pod::Parser> should use the following methods to access
+Clients of B<Marek::Pod::Parser> should use the following methods to access
 instance data fields:
 
 =cut
@@ -1451,8 +1451,8 @@ being parsed is always at the end (or top) of the input stack. When an
 input stream has been exhausted, it is popped off the end of the
 input stack.
 
-Each element on this input stack is a reference to C<Pod::InputSource>
-object. Please see L<Pod::InputObjects> for more details.
+Each element on this input stack is a reference to C<Marek::Pod::InputSource>
+object. Please see L<Marek::Pod::InputObjects> for more details.
 
 This method might be invoked when printing diagnostic messages, for example,
 to obtain the name and line number of the all input files that are currently
@@ -1494,15 +1494,15 @@ sub top_stream {
 
 =head1 PRIVATE METHODS AND DATA
 
-B<Pod::Parser> makes use of several internal methods and data fields
+B<Marek::Pod::Parser> makes use of several internal methods and data fields
 which clients should not need to see or use. For the sake of avoiding
 name collisions for client data and methods, these methods and fields
 are briefly discussed here. Determined hackers may obtain further
-information about them by reading the B<Pod::Parser> source code.
+information about them by reading the B<Marek::Pod::Parser> source code.
 
 Private data fields are stored in the hash-object whose reference is
 returned by the B<new()> constructor for this class. The names of all
-private methods and data-fields used by B<Pod::Parser> begin with a
+private methods and data-fields used by B<Marek::Pod::Parser> begin with a
 prefix of "_" and match the regular expression C</^_\w+$/>.
 
 =cut
@@ -1556,7 +1556,7 @@ sub _push_input_stream {
     $myData{_INFILE}  = '(unknown)'  unless (defined  $myData{_INFILE});
     $myData{_INPUT}   = $in_fh;
     my $input_top     = $myData{_TOP_STREAM}
-                      = new Pod::InputSource(
+                      = new Marek::Pod::InputSource(
                             -name        => $myData{_INFILE},
                             -handle      => $in_fh,
                             -was_cutting => $myData{_CUTTING}
@@ -1633,15 +1633,15 @@ list of children (each of which may be a text-string, or a similar
 tree-like structure).
 
 Pay special attention to L<"METHODS FOR PARSING AND PROCESSING"> and
-to the objects described in L<Pod::InputObjects>. The former describes
+to the objects described in L<Marek::Pod::InputObjects>. The former describes
 the gory details and parameters for how to customize and extend the
-parsing behavior of B<Pod::Parser>. B<Pod::InputObjects> provides
+parsing behavior of B<Marek::Pod::Parser>. B<Marek::Pod::InputObjects> provides
 several objects that may all be used interchangeably as parse-trees. The
-most obvious one is the B<Pod::ParseTree> object. It defines the basic
+most obvious one is the B<Marek::Pod::ParseTree> object. It defines the basic
 interface and functionality that all things trying to be a POD parse-tree
-should do. A B<Pod::ParseTree> is defined such that each "node" may be a
-text-string, or a reference to another parse-tree.  Each B<Pod::Paragraph>
-object and each B<Pod::InteriorSequence> object also supports the basic
+should do. A B<Marek::Pod::ParseTree> is defined such that each "node" may be a
+text-string, or a reference to another parse-tree.  Each B<Marek::Pod::Paragraph>
+object and each B<Marek::Pod::InteriorSequence> object also supports the basic
 parse-tree interface.
 
 The B<parse_text()> method takes a given paragraph of text, and
@@ -1657,7 +1657,7 @@ If you wish to turn an entire POD document into a parse-tree, that process
 is fairly straightforward. The B<parse_text()> method is the key to doing
 this successfully. Every paragraph-callback (i.e. the polymorphic methods
 for B<command()>, B<verbatim()>, and B<textblock()> paragraphs) takes
-a B<Pod::Paragraph> object as an argument. Each paragraph object has a
+a B<Marek::Pod::Paragraph> object as an argument. Each paragraph object has a
 B<parse_tree()> method that can be used to get or set a corresponding
 parse-tree. So for each of those paragraph-callback methods, simply call
 B<parse_text()> with the options you desire, and then use the returned
@@ -1673,7 +1673,7 @@ following:
 
     package MyPodParserTree;
 
-    @ISA = qw( Pod::Parser );
+    @ISA = qw( Marek::Pod::Parser );
 
     ...
 
@@ -1710,7 +1710,7 @@ following:
     my $paragraphs_ref = $parser->{'-paragraphs'};
 
 Of course, in this module-author's humble opinion, I'd be more inclined to
-use the existing B<Pod::ParseTree> object than a simple array. That way
+use the existing B<Marek::Pod::ParseTree> object than a simple array. That way
 everything in it, paragraphs and sequences, all respond to the same core
 interface for all parse-tree nodes. The result would look something like:
 
@@ -1720,7 +1720,7 @@ interface for all parse-tree nodes. The result would look something like:
 
     sub begin_pod {
         my $self = shift;
-        $self->{'-ptree'} = new Pod::ParseTree;  ## initialize parse-tree
+        $self->{'-ptree'} = new Marek::Pod::ParseTree;  ## initialize parse-tree
     }
 
     sub parse_tree {
@@ -1759,13 +1759,13 @@ interface for all parse-tree nodes. The result would look something like:
 
 Now you have the entire POD document as one great big parse-tree. You
 can even use the B<-expand_seq> option to B<parse_text> to insert
-whole different kinds of objects. Just don't expect B<Pod::Parser>
+whole different kinds of objects. Just don't expect B<Marek::Pod::Parser>
 to know what to do with them after that. That will need to be in your
 code. Or, alternatively, you can insert any object you like so long as
-it conforms to the B<Pod::ParseTree> interface.
+it conforms to the B<Marek::Pod::ParseTree> interface.
 
-One could use this to create subclasses of B<Pod::Paragraphs> and
-B<Pod::InteriorSequences> for specific commands (or to create your own
+One could use this to create subclasses of B<Marek::Pod::Paragraphs> and
+B<Marek::Pod::InteriorSequences> for specific commands (or to create your own
 custom node-types in the parse-tree) and add some kind of B<emit()>
 method to each custom node/subclass object in the tree. Then all you'd
 need to do is recursively walk the tree in the desired order, processing
@@ -1783,22 +1783,22 @@ line; C<__END__> is I<not> a blank line.
 
 =head1 SEE ALSO
 
-L<Pod::InputObjects>, L<Pod::Select>
+L<Marek::Pod::InputObjects>, L<Marek::Pod::Select>
 
-B<Pod::InputObjects> defines POD input objects corresponding to
+B<Marek::Pod::InputObjects> defines POD input objects corresponding to
 command paragraphs, parse-trees, and interior-sequences.
 
-B<Pod::Select> is a subclass of B<Pod::Parser> which provides the ability
+B<Marek::Pod::Select> is a subclass of B<Marek::Pod::Parser> which provides the ability
 to selectively include and/or exclude sections of a POD document from being
 translated based upon the current heading, subheading, subsubheading, etc.
 
 =for __PRIVATE__
-B<Pod::Callbacks> is a subclass of B<Pod::Parser> which gives its users
+B<Marek::Pod::Callbacks> is a subclass of B<Marek::Pod::Parser> which gives its users
 the ability the employ I<callback functions> instead of, or in addition
 to, overriding methods of the base class.
 
 =for __PRIVATE__
-B<Pod::Select> and B<Pod::Callbacks> do not override any
+B<Marek::Pod::Select> and B<Marek::Pod::Callbacks> do not override any
 methods nor do they define any new methods with the same name. Because
 of this, they may I<both> be used (in combination) as a base class of
 the same subclass in order to combine their functionality without

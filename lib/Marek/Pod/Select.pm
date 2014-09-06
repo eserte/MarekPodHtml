@@ -1,5 +1,5 @@
 #############################################################################
-# Pod/Select.pm -- function to select portions of POD docs
+# Marek/Pod/Select.pm -- function to select portions of POD docs
 #
 # Copyright (C) 1996-2000 by Bradford Appleton. All rights reserved.
 # This file is part of "PodParser". PodParser is free software;
@@ -7,7 +7,7 @@
 # as Perl itself.
 #############################################################################
 
-package Pod::Select;
+package Marek::Pod::Select;
 use strict;
 
 use vars qw($VERSION @ISA @EXPORT $MAX_HEADING_LEVEL %myData @section_headings @selected_sections);
@@ -18,11 +18,11 @@ require  5.005;    ## requires this Perl version or later
 
 =head1 NAME
 
-Pod::Select, podselect() - extract selected sections of POD from input
+Marek::Pod::Select, podselect() - extract selected sections of POD from input
 
 =head1 SYNOPSIS
 
-    use Pod::Select;
+    use Marek::Pod::Select;
 
     ## Select all the POD sections for each file in @filelist
     ## and print the result on standard output.
@@ -41,10 +41,10 @@ Pod::Select, podselect() - extract selected sections of POD from input
 
 or
 
-    use Pod::Select;
+    use Marek::Pod::Select;
 
     ## Create a parser object for selecting POD sections from the input
-    $parser = new Pod::Select();
+    $parser = new Marek::Pod::Select();
 
     ## Select all the POD sections for each file in @filelist
     ## and print the result to tmp.out.
@@ -63,7 +63,7 @@ or
 
 =head1 REQUIRES
 
-perl5.005, Pod::Parser, Exporter, Carp
+perl5.005, Marek::Pod::Parser, Exporter, Carp
 
 =head1 EXPORTS
 
@@ -73,15 +73,15 @@ podselect()
 
 B<podselect()> is a function which will extract specified sections of
 pod documentation from an input stream. This ability is provided by the
-B<Pod::Select> module which is a subclass of B<Pod::Parser>.
-B<Pod::Select> provides a method named B<select()> to specify the set of
+B<Marek::Pod::Select> module which is a subclass of B<Marek::Pod::Parser>.
+B<Marek::Pod::Select> provides a method named B<select()> to specify the set of
 POD sections to select for processing/printing. B<podselect()> merely
-creates a B<Pod::Select> object and then invokes the B<podselect()>
+creates a B<Marek::Pod::Select> object and then invokes the B<podselect()>
 followed by B<parse_from_file()>.
 
 =head1 SECTION SPECIFICATIONS
 
-B<podselect()> and B<Pod::Select::select()> may be given one or more
+B<podselect()> and B<Marek::Pod::Select::select()> may be given one or more
 "section specifications" to restrict the text processed to only the
 desired set of sections and their corresponding subsections.  A section
 specification is a string containing one or more Perl-style regular
@@ -153,7 +153,7 @@ C</!.+>
 
 =head1 RANGE SPECIFICATIONS
 
-B<podselect()> and B<Pod::Select::select()> may be given one or more
+B<podselect()> and B<Marek::Pod::Select::select()> may be given one or more
 "range specifications" to restrict the text processed to only the
 desired ranges of paragraphs in the desired set of sections. A range
 specification is a string containing a single Perl-style regular
@@ -239,9 +239,9 @@ C</=item mine/../=(item|back)/>
 
 #use diagnostics;
 use Carp;
-use Pod::Parser 1.04;
+use Marek::Pod::Parser 1.04;
 
-@ISA = qw(Pod::Parser);
+@ISA = qw(Marek::Pod::Parser);
 @EXPORT = qw(&podselect);
 
 ## Maximum number of heading levels supported for '=headN' directives
@@ -575,7 +575,7 @@ filenames are given).
 sub podselect {
     my(@argv) = @_;
     my %defaults = ();
-    my $pod_parser = new Pod::Select(%defaults);
+    my $pod_parser = new Marek::Pod::Select(%defaults);
     my $num_inputs = 0;
     my $output = '>&STDOUT';
     my %opts;
@@ -624,15 +624,15 @@ sub podselect {
 
 =head1 PRIVATE METHODS AND DATA
 
-B<Pod::Select> makes uses a number of internal methods and data fields
+B<Marek::Pod::Select> makes uses a number of internal methods and data fields
 which clients should not need to see or use. For the sake of avoiding
 name collisions with client data and methods, these methods and fields
 are briefly discussed here. Determined hackers may obtain further
-information about them by reading the B<Pod::Select> source code.
+information about them by reading the B<Marek::Pod::Select> source code.
 
 Private data fields are stored in the hash-object whose reference is
 returned by the B<new()> constructor for this class. The names of all
-private methods and data-fields used by B<Pod::Select> begin with a
+private methods and data-fields used by B<Marek::Pod::Select> begin with a
 prefix of "_" and match the regular expression C</^_\w+$/>.
 
 =cut
@@ -729,7 +729,7 @@ that it is to be matched against.
 
 =head1 SEE ALSO
 
-L<Pod::Parser>
+L<Marek::Pod::Parser>
 
 =head1 AUTHOR
 
