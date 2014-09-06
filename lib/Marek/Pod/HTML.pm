@@ -1358,7 +1358,12 @@ sub _expand_ptree {
                         { CLASS => 'POD_LINK', HREF => $destfile };
                }
                else {
-                   warn "Cannot find page `$page' at L<> on line $line\n";
+		    require URI::Escape;
+                    #warn "Cannot find page `$page' at L<> on line $line\n";
+		    $self->{_link_pagemark} = $self->{_link_sectionmark} = 'a';
+                    $self->{_link_pageopt} =
+                        $self->{_link_sectionopt} = 
+                        { CLASS => 'POD_LINK', HREF => "http://search.cpan.org/perldoc?" . URI::Escape::uri_escape($page) };
                }
             } else {
                 $dest = $self->{-mycache};
